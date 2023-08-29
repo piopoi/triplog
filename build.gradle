@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.1.2'
     id 'io.spring.dependency-management' version '1.1.2'
-    id 'org.asciidoctor.jvm.convert' version '3.3.2'
+    id 'org.asciidoctor.jvm.convert' version '3.3.2' //REST Docs
 }
 
 group = 'com.triplog'
@@ -12,10 +12,15 @@ java {
     sourceCompatibility = '17'
 }
 
+jar {
+    enabled = false
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    asciidoctorExt //REST Docs
 }
 
 repositories {
@@ -23,20 +28,41 @@ repositories {
 }
 
 ext {
-    set('snippetsDir', file("build/generated-snippets"))
+    set('snippetsDir', file("build/generated-snippets")) //REST Docs
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    compileOnly 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    //spring security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    //db
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
+
+    //jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
+    implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
+    implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+    testImplementation 'junit:junit:4.13.1'
+
+    //lombok
+    compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
-    testImplementation 'org.springframework.security:spring-security-test'
+
+    //REST Docs
+    asciidoctorExt "org.springframework.restdocs:spring-restdocs-asciidoctor:3.0.0"
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc:3.0.0'
+
+    implementation 'com.google.guava:guava:32.1.2-jre'
 }
 
 tasks.named('test') {
@@ -44,7 +70,34 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.named('asciidoctor') {
-    inputs.dir snippetsDir
+asciidoctor {
     dependsOn test
+    configurations 'asciidoctorExt'
+    inputs.dir snippetsDir
+    baseDirFollowsSourceFile()
+}
+
+//REST Docs
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
+}
+
+//REST Docs
+task copyDocument(type: Copy) {
+    dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
+
+//REST Docs
+build {
+    dependsOn copyDocument
+}
+
+//REST Docs
+bootJar {
+    dependsOn asciidoctor
+    from("${asciidoctor.outputDir}") {
+        into 'static/docs'
+    }
 }
