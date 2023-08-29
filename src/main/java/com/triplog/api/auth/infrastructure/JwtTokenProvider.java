@@ -2,7 +2,7 @@ package com.triplog.api.auth.infrastructure;
 
 import static com.triplog.api.auth.constants.AuthConstants.*;
 
-import com.triplog.api.auth.application.CustomUserDetailService;
+import com.triplog.api.auth.application.UserDetailServiceImpl;
 import com.triplog.api.auth.dto.TokenResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -31,14 +31,14 @@ public class JwtTokenProvider {
     private final long expirationTimeMillis;
     private final Key key;
 
-    private final CustomUserDetailService customUserDetailService;
+    private final UserDetailServiceImpl userDetailServiceImpl;
 
     public JwtTokenProvider(
-            CustomUserDetailService customUserDetailService,
+            UserDetailServiceImpl userDetailServiceImpl,
             @Value("${security.jwt.token.secret-key}") String secretKey,
             @Value("${security.jwt.token.expire-length}") long expirationTimeMillis
     ) {
-        this.customUserDetailService = customUserDetailService;
+        this.userDetailServiceImpl = userDetailServiceImpl;
         byte[] secretByteKey = DatatypeConverter.parseBase64Binary(secretKey);
         this.key = Keys.hmacShaKeyFor(secretByteKey);
         this.expirationTimeMillis = expirationTimeMillis;
@@ -60,7 +60,7 @@ public class JwtTokenProvider {
         if (claims.get("auth") == null) {
             throw new RuntimeException(AUTH_JWT_TOKEN_UNPRIVILEGED);
         }
-        UserDetails userDetails = customUserDetailService.loadUserByUsername(claims.getSubject());
+        UserDetails userDetails = userDetailServiceImpl.loadUserByUsername(claims.getSubject());
         return new UsernamePasswordAuthenticationToken(userDetails, accessToken, userDetails.getAuthorities());
     }
 

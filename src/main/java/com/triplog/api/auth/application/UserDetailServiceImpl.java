@@ -1,7 +1,7 @@
 package com.triplog.api.auth.application;
 
 import com.triplog.api.auth.constants.AuthConstants;
-import com.triplog.api.auth.domain.UserDetail;
+import com.triplog.api.auth.domain.UserDetailsImpl;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailService implements UserDetailsService {
+public class UserDetailServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
@@ -20,6 +20,6 @@ public class CustomUserDetailService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(AuthConstants.AUTH_USER_NOT_EXISTS));
-        return new UserDetail(user);
+        return new UserDetailsImpl(user);
     }
 }
