@@ -1,6 +1,6 @@
 package com.triplog.api.auth.application;
 
-import com.triplog.api.auth.AuthConstants;
+import com.triplog.api.auth.constants.AuthConstants;
 import com.triplog.api.auth.domain.UserDetail;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.repository.UserRepository;

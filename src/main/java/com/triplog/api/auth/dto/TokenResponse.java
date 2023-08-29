@@ -1,19 +1,21 @@
 package com.triplog.api.auth.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 
-@Builder
-@Data
 @Getter
-@AllArgsConstructor
+@ToString
 public class TokenResponse {
 
-    private String grantType;
+    private final String grantType;
+    private final String accessToken;
+    private final String refreshToken;
 
-    private String accessToken;
-
-    private String refreshToken;
+    @Builder
+    public TokenResponse(String grantType, String accessToken, String refreshToken) {
+        this.grantType = grantType;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 }

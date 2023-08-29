@@ -1,9 +1,7 @@
 package com.triplog.api.user.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-@AllArgsConstructor
 @Getter
 public enum Role {
 
@@ -11,4 +9,8 @@ public enum Role {
     USER("USER");
 
     private final String value;
+
+    Role(String value) {
+        this.value = value;
+    }
 }

@@ -1,6 +1,6 @@
 package com.triplog.api.auth.infrastructure;
 
-import static com.triplog.api.auth.AuthConstants.*;
+import static com.triplog.api.auth.constants.AuthConstants.*;
 
 import com.triplog.api.auth.application.CustomUserDetailService;
 import com.triplog.api.auth.dto.TokenResponse;

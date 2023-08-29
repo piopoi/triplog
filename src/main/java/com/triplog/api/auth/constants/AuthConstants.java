@@ -1,4 +1,4 @@
-package com.triplog.api.auth;
+package com.triplog.api.auth.constants;
 
 public class AuthConstants {
 
