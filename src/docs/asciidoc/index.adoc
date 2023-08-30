@@ -12,3 +12,11 @@ include::{snippets}/user/create/http-request.adoc[]
 include::{snippets}/user/create/request-fields.adoc[]
 === 응답
 include::{snippets}/user/create/http-response.adoc[]
+
+== 로그인
+=== 요청
+include::{snippets}/auth/login/http-request.adoc[]
+include::{snippets}/auth/login/request-fields.adoc[]
+=== 응답
+include::{snippets}/auth/login/http-response.adoc[]
+include::{snippets}/auth/login/response-fields.adoc[]

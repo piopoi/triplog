@@ -17,20 +17,19 @@ import org.junit.jupiter.api.Test;
 class UserControllerTest extends ControllerTest {
 
     @Test
-    @DisplayName("사용자 생성")
+    @DisplayName("사용자를 등록할 수 있다.")
     void createUser() throws Exception {
         //given
         UserRequest userRequest = UserRequest.builder()
                 .email("test@test.com")
                 .password("12345678")
                 .build();
-        String json = objectMapper.writeValueAsString(userRequest);
 
         //when then
-        mockMvc.perform(post("/user")
+        mockMvc.perform(post("/api/user")
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(json))
+                        .content(objectMapper.writeValueAsString(userRequest)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("user/create",

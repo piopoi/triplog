@@ -1,6 +1,9 @@
 package com.triplog.api.auth.dto;
 
-import static com.triplog.api.auth.constants.AuthConstants.*;
+import static com.triplog.api.auth.constants.AuthConstants.AUTH_EMAIL_EMPTY;
+import static com.triplog.api.auth.constants.AuthConstants.AUTH_EMAIL_INVALID;
+import static com.triplog.api.auth.constants.AuthConstants.AUTH_PASSWORD_EMPTY;
+import static com.triplog.api.auth.constants.AuthConstants.AUTH_PASSWORD_LENGTH_MIN;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

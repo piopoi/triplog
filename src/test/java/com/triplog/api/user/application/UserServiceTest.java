@@ -28,7 +28,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("사용자 생성")
+    @DisplayName("사용자를 등록할 수 있다.")
     void createUser() {
         //given
         UserRequest userRequest = UserRequest.builder()
@@ -37,11 +37,11 @@ class UserServiceTest {
                 .build();
 
         //when
-        User user = userService.createUser(userRequest);
+        Long createdUserId = userService.createUser(userRequest);
 
         //then
         User findUser = userRepository.findAll().get(0);
         assertThat(findUser).isNotNull();
-        assertThat(findUser.getId()).isEqualTo(user.getId());
+        assertThat(findUser.getId()).isEqualTo(createdUserId);
     }
 }
