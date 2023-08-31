@@ -1,5 +1,6 @@
 package com.triplog.api.user.domain;
 
+import com.triplog.api.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,8 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Entity
 @Getter
 @ToString
-@EqualsAndHashCode(of = {"id"})
-public class User {
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
