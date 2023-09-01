@@ -1,6 +1,8 @@
 package com.triplog.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.triplog.api.utils.DatabaseCleanup;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -19,7 +21,13 @@ public class ControllerTest {
 
     @Autowired
     protected MockMvc mockMvc;
-
     @Autowired
     protected ObjectMapper objectMapper;
+    @Autowired
+    protected DatabaseCleanup databaseCleanup;
+
+    @BeforeEach
+    public void basicSetUp() {
+        databaseCleanup.execute();
+    }
 }
