@@ -1,6 +1,7 @@
 package com.triplog.api.auth.application;
 
-import com.triplog.api.auth.constants.AuthConstants;
+import static com.triplog.api.auth.constants.AuthConstants.*;
+
 import com.triplog.api.auth.domain.UserDetailsImpl;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.repository.UserRepository;
@@ -19,7 +20,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(AuthConstants.AUTH_USER_NOT_EXISTS));
+                .orElseThrow(() -> new UsernameNotFoundException(MESSAGE_AUTH_USER_NOT_EXISTS));
         return new UserDetailsImpl(user);
     }
 }

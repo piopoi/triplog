@@ -20,6 +20,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class User extends BaseEntity {
 
+    public static final int USER_PASSWORD_LENGTH_MIN = 8;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,7 +31,7 @@ public class User extends BaseEntity {
     private String email;
 
     @Column(nullable = false)
-    @Size(min = 8)
+    @Size(min = USER_PASSWORD_LENGTH_MIN)
     private String password;
 
     @Column(nullable = false, length = 10)

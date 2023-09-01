@@ -1,9 +1,7 @@
 package com.triplog.api.user.dto;
 
-import static com.triplog.api.user.constants.UserConstants.USER_EMAIL_EMPTY;
-import static com.triplog.api.user.constants.UserConstants.USER_EMAIL_INVALID;
-import static com.triplog.api.user.constants.UserConstants.USER_PASSWORD_EMPTY;
-import static com.triplog.api.user.constants.UserConstants.USER_PASSWORD_LENGTH_MIN;
+import static com.triplog.api.user.constants.UserConstants.*;
+import static com.triplog.api.user.domain.User.*;
 
 import com.triplog.api.user.domain.User;
 import jakarta.validation.constraints.Email;
@@ -15,18 +13,18 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class UserRequest {
+public class UserCreateRequest {
 
-    @NotBlank(message = USER_EMAIL_EMPTY)
-    @Email(message = USER_EMAIL_INVALID)
+    @NotBlank(message = MESSAGE_USER_EMAIL_EMPTY)
+    @Email(message = MESSAGE_USER_EMAIL_INVALID)
     private final String email;
 
-    @NotBlank(message = USER_PASSWORD_EMPTY)
-    @Size(min = 8, message = USER_PASSWORD_LENGTH_MIN)
+    @NotBlank(message = MESSAGE_USER_PASSWORD_EMPTY)
+    @Size(min = USER_PASSWORD_LENGTH_MIN, message = MESSAGE_USER_PASSWORD_LENGTH_MIN)
     private final String password;
 
     @Builder
-    public UserRequest(String email, String password) {
+    public UserCreateRequest(String email, String password) {
         this.email = email;
         this.password = password;
     }

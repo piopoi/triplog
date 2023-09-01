@@ -58,7 +58,7 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken); //토큰 복호화
         if (claims.get("auth") == null) {
-            throw new RuntimeException(AUTH_JWT_TOKEN_UNPRIVILEGED);
+            throw new RuntimeException(MESSAGE_AUTH_JWT_TOKEN_UNPRIVILEGED);
         }
         UserDetails userDetails = userDetailServiceImpl.loadUserByUsername(claims.getSubject());
         return new UsernamePasswordAuthenticationToken(userDetails, accessToken, userDetails.getAuthorities());
@@ -72,13 +72,13 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            log.info(AUTH_JWT_TOKEN_INVALID, e);
+            log.info(MESSAGE_AUTH_JWT_TOKEN_INVALID, e);
         } catch (ExpiredJwtException e) {
-            log.info(AUTH_JWT_TOKEN_EXPIRED, e);
+            log.info(MESSAGE_AUTH_JWT_TOKEN_EXPIRED, e);
         } catch (UnsupportedJwtException e) {
-            log.info(AUTH_JWT_TOKEN_UNSUPPORTED, e);
+            log.info(MESSAGE_AUTH_JWT_TOKEN_UNSUPPORTED, e);
         } catch (IllegalArgumentException e) {
-            log.info(AUTH_JWT_CLAIMS_EMPTY, e);
+            log.info(MESSAGE_AUTH_JWT_CLAIMS_EMPTY, e);
         }
         return false;
     }
