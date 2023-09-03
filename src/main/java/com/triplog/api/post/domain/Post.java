@@ -16,7 +16,9 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Entity
 @Getter
 @ToString
@@ -39,7 +41,7 @@ public class Post extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private User author;
+    private User user;
 
     public Post() {
     }
@@ -48,6 +50,6 @@ public class Post extends BaseEntity {
     public Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
-        this.author = user;
+        this.user = user;
     }
 }
