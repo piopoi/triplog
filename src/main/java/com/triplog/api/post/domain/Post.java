@@ -1,7 +1,10 @@
 package com.triplog.api.post.domain;
 
+import static com.triplog.api.post.constants.PostConstants.*;
+
 import com.triplog.api.BaseEntity;
 import com.triplog.api.user.domain.User;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,7 +34,7 @@ public class Post extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = POST_TITLE_LENGTH_MAX)
+    @Column(nullable = false)
     @Size(max = POST_TITLE_LENGTH_MAX)
     private String title;
 
@@ -48,8 +51,26 @@ public class Post extends BaseEntity {
 
     @Builder
     public Post(String title, String content, User user) {
+        validateTitle(title);
+        validateContent(content);
+
         this.title = title;
         this.content = content;
         this.user = user;
+    }
+
+    private void validateTitle(String title) {
+        if (StringUtils.isBlank(title)) {
+            throw new IllegalArgumentException(MESSAGE_POST_TITLE_EMPTY);
+        }
+        if (title.length() > POST_TITLE_LENGTH_MAX) {
+            throw new IllegalArgumentException(MESSAGE_POST_TITLE_LENGTH);
+        }
+    }
+
+    private void validateContent(String content) {
+        if (StringUtils.isBlank(content)) {
+            throw new IllegalArgumentException(MESSAGE_POST_CONTENT_EMPTY);
+        }
     }
 }

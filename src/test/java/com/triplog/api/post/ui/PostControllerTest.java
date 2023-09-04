@@ -6,6 +6,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.snippet.Attributes.key;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -20,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 
 public class PostControllerTest extends ControllerTest {
 
@@ -51,7 +51,7 @@ public class PostControllerTest extends ControllerTest {
         mockMvc.perform(post("/api/post")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postCreateRequest))
-                        .with(SecurityMockMvcRequestPostProcessors.user(userDetailsImpl)))
+                        .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("post/create",
@@ -93,7 +93,7 @@ public class PostControllerTest extends ControllerTest {
         mockMvc.perform(post("/api/post")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postCreateRequest))
-                        .with(SecurityMockMvcRequestPostProcessors.user(userDetailsImpl)))
+                        .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("title"))
@@ -105,7 +105,7 @@ public class PostControllerTest extends ControllerTest {
     void createPost_invalidTitle() throws Exception {
         //given
         PostCreateRequest postCreateRequest = PostCreateRequest.builder()
-                .title("_123456789_123456789_123456789_123456789_123456789_") //length = 51
+                .title("a".repeat(51)) //length = 51
                 .content(content)
                 .build();
 
@@ -113,7 +113,7 @@ public class PostControllerTest extends ControllerTest {
         mockMvc.perform(post("/api/post")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postCreateRequest))
-                        .with(SecurityMockMvcRequestPostProcessors.user(userDetailsImpl)))
+                        .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("title"))
@@ -133,7 +133,7 @@ public class PostControllerTest extends ControllerTest {
         mockMvc.perform(post("/api/post")
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postCreateRequest))
-                        .with(SecurityMockMvcRequestPostProcessors.user(userDetailsImpl)))
+                        .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("content"))
