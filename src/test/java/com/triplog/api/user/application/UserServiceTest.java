@@ -1,6 +1,6 @@
 package com.triplog.api.user.application;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.dto.UserCreateRequest;

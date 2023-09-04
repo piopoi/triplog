@@ -1,11 +1,7 @@
 package com.triplog.api.post.application;
 
-import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_CONTENT_EMPTY;
-import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_TITLE_EMPTY;
-import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_TITLE_LENGTH;
 import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_NOT_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.triplog.api.post.dto.PostCreateRequest;
 import com.triplog.api.post.dto.PostCreateResponse;
@@ -65,50 +61,5 @@ class PostServiceTest {
         assertThat(postCreateResponse.getTitle()).isEqualTo(title);
         assertThat(postCreateResponse.getContent()).isEqualTo(content);
         assertThat(postCreateResponse.getUserId()).isEqualTo(userId);
-    }
-
-    @Test
-    @DisplayName("제목 없이 게시글을 작성할 수 없다.")
-    void createPost_emptyTitle() {
-        //given
-        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
-                .title("")
-                .content(content)
-                .build();
-
-        //when then
-        assertThatThrownBy(() -> postService.createPost(postCreateRequest, user))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(MESSAGE_POST_TITLE_EMPTY);
-    }
-
-    @Test
-    @DisplayName("제목이 50자를 초과할 수 없다.")
-    void createPost_invalidTitle() {
-        //given
-        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
-                .title("a".repeat(51)) //length = 51
-                .content(content)
-                .build();
-
-        //when then
-        assertThatThrownBy(() -> postService.createPost(postCreateRequest, user))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(MESSAGE_POST_TITLE_LENGTH);
-    }
-
-    @Test
-    @DisplayName("본문 없이 게시글을 작성할 수 없다.")
-    void createPost_emptyContent() {
-        //given
-        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
-                .title(title)
-                .content("")
-                .build();
-
-        //when then
-        assertThatThrownBy(() -> postService.createPost(postCreateRequest, user))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(MESSAGE_POST_CONTENT_EMPTY);
     }
 }

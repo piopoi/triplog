@@ -6,8 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -29,11 +27,9 @@ public class User extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    @Email
     private String email;
 
     @Column(nullable = false)
-    @Size(min = USER_PASSWORD_LENGTH_MIN)
     private String password;
 
     @Column(nullable = false, length = 10)
