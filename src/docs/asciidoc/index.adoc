@@ -20,3 +20,10 @@ include::{snippets}/auth/login/request-fields.adoc[]
 === 응답
 include::{snippets}/auth/login/http-response.adoc[]
 include::{snippets}/auth/login/response-fields.adoc[]
+
+== 글 등록
+=== 요청
+include::{snippets}/post/create/http-request.adoc[]
+include::{snippets}/post/create/request-fields.adoc[]
+=== 응답
+include::{snippets}/post/create/http-response.adoc[]
