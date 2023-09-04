@@ -1,15 +1,12 @@
 package com.triplog.api.user.ui;
 
-import com.triplog.api.common.error.ErrorResult;
 import com.triplog.api.user.application.UserService;
 import com.triplog.api.user.dto.UserCreateRequest;
 import com.triplog.api.user.dto.UserCreateRequestValidator;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -33,13 +30,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity createUser(@RequestBody @Validated UserCreateRequest userCreateRequest,
-                                     BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            ErrorResult errorResult = new ErrorResult(bindingResult);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResult);
-        }
-
+    public ResponseEntity<Void> createUser(@RequestBody @Validated UserCreateRequest userCreateRequest) {
         Long userId = userService.createUser(userCreateRequest);
         return ResponseEntity.created(URI.create("/user/" + userId)).build();
     }
