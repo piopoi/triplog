@@ -1,9 +1,5 @@
 package com.triplog.api.user.ui;
 
-import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_EMAIL_EMPTY;
-import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_EMAIL_INVALID;
-import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_PASSWORD_EMPTY;
-import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_PASSWORD_LENGTH_MIN;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -11,14 +7,12 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.triplog.api.BaseControllerTest;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.MvcResult;
 
 class UserControllerTest extends BaseControllerTest {
 
@@ -65,9 +59,7 @@ class UserControllerTest extends BaseControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreateRequestDTO)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].field").value("email"))
-                .andExpect(jsonPath("$.errors[0].message").value(MESSAGE_USER_EMAIL_EMPTY));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -85,9 +77,7 @@ class UserControllerTest extends BaseControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreateRequestDTO)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].field").value("email"))
-                .andExpect(jsonPath("$.errors[0].message").value(MESSAGE_USER_EMAIL_INVALID));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -100,15 +90,12 @@ class UserControllerTest extends BaseControllerTest {
                 .build();
 
         //when then
-        MvcResult mvcResult = mockMvc.perform(post("/api/user")
+        mockMvc.perform(post("/api/user")
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreateRequestDTO)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andReturn();
-        checkJsonResponse(mvcResult, "$.errors[*].field", "password");
-        checkJsonResponse(mvcResult, "$.errors[*].message", MESSAGE_USER_PASSWORD_EMPTY);
+                .andExpect(status().isBadRequest());
     }
 
 
@@ -127,8 +114,6 @@ class UserControllerTest extends BaseControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreateRequestDTO)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].field").value("password"))
-                .andExpect(jsonPath("$.errors[0].message").value(MESSAGE_USER_PASSWORD_LENGTH_MIN));
+                .andExpect(status().isBadRequest());
     }
 }

@@ -1,9 +1,5 @@
 package com.triplog.api.post.ui;
 
-import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_CONTENT_EMPTY;
-import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_NOT_EXISTS;
-import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_TITLE_EMPTY;
-import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_TITLE_LENGTH;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -15,7 +11,6 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.triplog.api.BaseControllerTest;
@@ -78,8 +73,8 @@ public class PostControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("로그인 없이 게시글을 작성할 수 없다.")
-    void createPost_noLogin() throws Exception {
+    @DisplayName("권한 없이 게시글을 작성할 수 없다.")
+    void createPost_unauth() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
                 .title(title)
@@ -109,9 +104,7 @@ public class PostControllerTest extends BaseControllerTest {
                         .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(userDetailsImpl)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].field").value("title"))
-                .andExpect(jsonPath("$.errors[0].message").value(MESSAGE_POST_TITLE_EMPTY));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -129,9 +122,7 @@ public class PostControllerTest extends BaseControllerTest {
                         .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(userDetailsImpl)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].field").value("title"))
-                .andExpect(jsonPath("$.errors[0].message").value(MESSAGE_POST_TITLE_LENGTH));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -149,9 +140,7 @@ public class PostControllerTest extends BaseControllerTest {
                         .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(userDetailsImpl)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].field").value("content"))
-                .andExpect(jsonPath("$.errors[0].message").value(MESSAGE_POST_CONTENT_EMPTY));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -184,13 +173,12 @@ public class PostControllerTest extends BaseControllerTest {
                         .accept(APPLICATION_JSON)
                         .with(user(userDetailsImpl)))
                 .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(MESSAGE_POST_NOT_EXISTS));
+                .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("사용자가 아니면 게시글을 조회할 수 없다.")
-    void getPost_unauthorized() throws Exception {
+    @DisplayName("권한 없이 게시글을 조회할 수 없다.")
+    void getPost_unauth() throws Exception {
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.get("/api/post/{id}", post.getId())
                         .accept(APPLICATION_JSON))

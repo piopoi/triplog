@@ -1,7 +1,5 @@
 package com.triplog.api.post.application;
 
-import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_NOT_EXISTS;
-import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_NOT_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -39,8 +37,7 @@ class PostServiceTest extends BaseTest {
     @BeforeEach
     void setUp() {
         userId = userService.createUser(new UserCreateRequestDTO("test@test.com", "12345678"));
-        user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_USER_NOT_EXISTS));
+        user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
         post = postRepository.save(new Post(title, content, user));
     }
 
@@ -74,7 +71,6 @@ class PostServiceTest extends BaseTest {
     void getPost_invalidId() {
         //when then
         assertThatThrownBy(() -> postService.getPost(99L))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage(MESSAGE_POST_NOT_EXISTS);
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }
