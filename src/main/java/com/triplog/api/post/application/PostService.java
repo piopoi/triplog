@@ -1,8 +1,8 @@
 package com.triplog.api.post.application;
 
 import com.triplog.api.post.domain.Post;
-import com.triplog.api.post.dto.PostCreateRequest;
-import com.triplog.api.post.dto.PostCreateResponse;
+import com.triplog.api.post.dto.PostCreateRequestDTO;
+import com.triplog.api.post.dto.PostCreateResponseDTO;
 import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.domain.User;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +18,13 @@ public class PostService {
 
     private final PostRepository postRepository;
 
-    public PostCreateResponse createPost(PostCreateRequest postCreateRequest, User user) {
+    public PostCreateResponseDTO createPost(PostCreateRequestDTO postCreateRequestDTO, User user) {
         Post post = Post.builder()
-                .title(postCreateRequest.getTitle())
-                .content(postCreateRequest.getContent())
+                .title(postCreateRequestDTO.getTitle())
+                .content(postCreateRequestDTO.getContent())
                 .user(user)
                 .build();
         Post savedPost = postRepository.save(post);
-        return PostCreateResponse.from(savedPost);
+        return PostCreateResponseDTO.from(savedPost);
     }
 }

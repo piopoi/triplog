@@ -2,8 +2,8 @@ package com.triplog.api.post.ui;
 
 import com.triplog.api.auth.domain.UserDetailsImpl;
 import com.triplog.api.post.application.PostService;
-import com.triplog.api.post.dto.PostCreateRequest;
-import com.triplog.api.post.dto.PostCreateResponse;
+import com.triplog.api.post.dto.PostCreateRequestDTO;
+import com.triplog.api.post.dto.PostCreateResponseDTO;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,8 @@ public class PostController {
 
     @PostMapping
     public ResponseEntity<Void> createPost(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                           @RequestBody @Valid PostCreateRequest postCreateRequest) {
-        PostCreateResponse postCreateResponse = postService.createPost(postCreateRequest, userDetails.getUser());
-        return ResponseEntity.created(URI.create("/api//post/" + postCreateResponse.getId())).build();
+                                           @RequestBody @Valid PostCreateRequestDTO postCreateRequestDTO) {
+        PostCreateResponseDTO postCreateResponseDTO = postService.createPost(postCreateRequestDTO, userDetails.getUser());
+        return ResponseEntity.created(URI.create("/api//post/" + postCreateResponseDTO.getId())).build();
     }
 }

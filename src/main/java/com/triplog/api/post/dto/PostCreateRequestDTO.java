@@ -11,7 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class PostCreateRequest {
+public class PostCreateRequestDTO {
 
     @NotBlank(message = MESSAGE_POST_TITLE_EMPTY)
     @Size(max = POST_TITLE_LENGTH_MAX, message = MESSAGE_POST_TITLE_LENGTH)
@@ -21,7 +21,7 @@ public class PostCreateRequest {
     private final String content;
 
     @Builder
-    public PostCreateRequest(String title, String content) {
+    public PostCreateRequestDTO(String title, String content) {
         this.title = title;
         this.content = content;
     }

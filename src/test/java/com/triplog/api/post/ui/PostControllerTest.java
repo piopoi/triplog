@@ -12,9 +12,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.triplog.api.ControllerTest;
+import com.triplog.api.BaseControllerTest;
 import com.triplog.api.auth.domain.UserDetailsImpl;
-import com.triplog.api.post.dto.PostCreateRequest;
+import com.triplog.api.post.domain.Post;
+import com.triplog.api.post.dto.PostCreateRequestDTO;
+import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class PostControllerTest extends ControllerTest {
+public class PostControllerTest extends BaseControllerTest {
 
     private final String title = "foo";
     private final String content = "bar";
@@ -42,7 +44,7 @@ public class PostControllerTest extends ControllerTest {
     @DisplayName("게시글을 작성할 수 있다.")
     void createPost() throws Exception {
         //given
-        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
                 .title(title)
                 .content(content)
                 .build();
@@ -50,7 +52,7 @@ public class PostControllerTest extends ControllerTest {
         //when then
         mockMvc.perform(post("/api/post")
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(postCreateRequest))
+                        .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isCreated())
@@ -67,7 +69,7 @@ public class PostControllerTest extends ControllerTest {
     @DisplayName("로그인 없이 게시글을 작성할 수 없다.")
     void createPost_noLogin() throws Exception {
         //given
-        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
                 .title(title)
                 .content(content)
                 .build();
@@ -75,7 +77,7 @@ public class PostControllerTest extends ControllerTest {
         //when then
         mockMvc.perform(post("/api/post")
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(postCreateRequest)))
+                        .content(objectMapper.writeValueAsString(postCreateRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -84,7 +86,7 @@ public class PostControllerTest extends ControllerTest {
     @DisplayName("제목 없이 게시글을 작성할 수 없다.")
     void createPost_emptyTitle() throws Exception {
         //given
-        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
                 .title("")
                 .content(content)
                 .build();
@@ -92,7 +94,7 @@ public class PostControllerTest extends ControllerTest {
         //when then
         mockMvc.perform(post("/api/post")
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(postCreateRequest))
+                        .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -104,7 +106,7 @@ public class PostControllerTest extends ControllerTest {
     @DisplayName("제목이 50자를 초과할 수 없다.")
     void createPost_invalidTitle() throws Exception {
         //given
-        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
                 .title("a".repeat(51)) //length = 51
                 .content(content)
                 .build();
@@ -112,7 +114,7 @@ public class PostControllerTest extends ControllerTest {
         //when then
         mockMvc.perform(post("/api/post")
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(postCreateRequest))
+                        .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -124,7 +126,7 @@ public class PostControllerTest extends ControllerTest {
     @DisplayName("본문 없이 게시글을 작성할 수 없다.")
     void createPost_emptyContent() throws Exception {
         //given
-        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
                 .title(title)
                 .content("")
                 .build();
@@ -132,7 +134,7 @@ public class PostControllerTest extends ControllerTest {
         //when then
         mockMvc.perform(post("/api/post")
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(postCreateRequest))
+                        .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())

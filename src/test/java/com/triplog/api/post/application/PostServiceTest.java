@@ -4,8 +4,8 @@ import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_NOT_EXIS
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.triplog.api.BaseTest;
-import com.triplog.api.post.dto.PostCreateRequest;
-import com.triplog.api.post.dto.PostCreateResponse;
+import com.triplog.api.post.dto.PostCreateRequestDTO;
+import com.triplog.api.post.dto.PostCreateResponseDTO;
 import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.application.UserService;
 import com.triplog.api.user.domain.User;
@@ -47,18 +47,18 @@ class PostServiceTest extends BaseTest {
     @DisplayName("게시글을 생성할 수 있다.")
     void createPost() {
         //given
-        PostCreateRequest postCreateRequest = PostCreateRequest.builder()
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
                 .title(title)
                 .content(content)
                 .build();
 
         //when
-        PostCreateResponse postCreateResponse = postService.createPost(postCreateRequest, user);
+        PostCreateResponseDTO postCreateResponseDTO = postService.createPost(postCreateRequestDTO, user);
 
         //then
-        assertThat(postCreateResponse).isNotNull();
-        assertThat(postCreateResponse.getTitle()).isEqualTo(title);
-        assertThat(postCreateResponse.getContent()).isEqualTo(content);
-        assertThat(postCreateResponse.getUserId()).isEqualTo(userId);
+        assertThat(postCreateResponseDTO).isNotNull();
+        assertThat(postCreateResponseDTO.getTitle()).isEqualTo(title);
+        assertThat(postCreateResponseDTO.getContent()).isEqualTo(content);
+        assertThat(postCreateResponseDTO.getUserId()).isEqualTo(userId);
     }
 }
