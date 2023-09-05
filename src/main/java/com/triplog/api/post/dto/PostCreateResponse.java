@@ -20,7 +20,7 @@ public class PostCreateResponse {
         this.userId = userId;
     }
 
-    public static PostCreateResponse of(Post post) {
+    public static PostCreateResponse from(Post post) {
         return PostCreateResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())

@@ -25,6 +25,6 @@ public class PostService {
                 .user(user)
                 .build();
         Post savedPost = postRepository.save(post);
-        return PostCreateResponse.of(savedPost);
+        return PostCreateResponse.from(savedPost);
     }
 }
