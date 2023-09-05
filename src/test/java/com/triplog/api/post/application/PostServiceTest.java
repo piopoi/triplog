@@ -3,21 +3,20 @@ package com.triplog.api.post.application;
 import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_NOT_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.triplog.api.BaseTest;
 import com.triplog.api.post.dto.PostCreateRequest;
 import com.triplog.api.post.dto.PostCreateResponse;
 import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.application.UserService;
 import com.triplog.api.user.domain.User;
-import com.triplog.api.user.dto.UserCreateRequest;
+import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class PostServiceTest {
+class PostServiceTest extends BaseTest {
 
     private final String title = "foo";
     private final String content = "bar";
@@ -39,7 +38,7 @@ class PostServiceTest {
         postRepository.deleteAll();
         userRepository.deleteAll();
 
-        userId = userService.createUser(new UserCreateRequest("test@test.com", "12345678"));
+        userId = userService.createUser(new UserCreateRequestDTO("test@test.com", "12345678"));
         user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(MESSAGE_USER_NOT_EXISTS));
     }

@@ -12,7 +12,7 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class TokenRequest {
+public class TokenRequestDTO {
 
     @NotBlank(message = MESSAGE_AUTH_EMAIL_EMPTY)
     @Email(message = MESSAGE_AUTH_EMAIL_INVALID)
@@ -23,7 +23,7 @@ public class TokenRequest {
     private final String password;
 
     @Builder
-    public TokenRequest(String email, String password) {
+    public TokenRequestDTO(String email, String password) {
         this.email = email;
         this.password = password;
     }

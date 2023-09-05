@@ -13,7 +13,7 @@ import lombok.ToString;
 
 @Getter
 @ToString
-public class UserCreateRequest {
+public class UserCreateRequestDTO {
 
     @NotBlank(message = MESSAGE_USER_EMAIL_EMPTY)
     @Email(message = MESSAGE_USER_EMAIL_INVALID)
@@ -24,7 +24,7 @@ public class UserCreateRequest {
     private final String password;
 
     @Builder
-    public UserCreateRequest(String email, String password) {
+    public UserCreateRequestDTO(String email, String password) {
         this.email = email;
         this.password = password;
     }

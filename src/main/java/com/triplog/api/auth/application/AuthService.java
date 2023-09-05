@@ -1,7 +1,7 @@
 package com.triplog.api.auth.application;
 
-import com.triplog.api.auth.dto.TokenRequest;
-import com.triplog.api.auth.dto.TokenResponse;
+import com.triplog.api.auth.dto.TokenRequestDTO;
+import com.triplog.api.auth.dto.TokenResponseDTO;
 import com.triplog.api.auth.infrastructure.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,11 +18,11 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional(readOnly = true)
-    public TokenResponse login(TokenRequest tokenRequest) {
+    public TokenResponseDTO login(TokenRequestDTO tokenRequestDTO) {
         //Authentication 객체 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                tokenRequest.getEmail(),
-                tokenRequest.getPassword()
+                tokenRequestDTO.getEmail(),
+                tokenRequestDTO.getPassword()
         );
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 

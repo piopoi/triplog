@@ -1,7 +1,7 @@
 package com.triplog.api.user.ui;
 
 import com.triplog.api.user.application.UserService;
-import com.triplog.api.user.dto.UserCreateRequest;
+import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.dto.UserCreateRequestValidator;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +30,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> createUser(@RequestBody @Validated UserCreateRequest userCreateRequest) {
-        Long userId = userService.createUser(userCreateRequest);
+    public ResponseEntity<Void> createUser(@RequestBody @Validated UserCreateRequestDTO userCreateRequestDTO) {
+        Long userId = userService.createUser(userCreateRequestDTO);
         return ResponseEntity.created(URI.create("/user/" + userId)).build();
     }
 }

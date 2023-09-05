@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-import com.triplog.api.auth.dto.TokenRequest;
-import com.triplog.api.auth.dto.TokenResponse;
+import com.triplog.api.auth.dto.TokenRequestDTO;
+import com.triplog.api.auth.dto.TokenResponseDTO;
 import com.triplog.api.auth.infrastructure.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,14 +35,14 @@ public class AuthServiceTest {
     @DisplayName("로그인 할 수 있다")
     void login() {
         //given
-        TokenRequest tokenRequest = new TokenRequest("test@example.com", "password");
-        TokenResponse expectedResponse = new TokenResponse("Bearer", "TOKEN", "TOKEN");
+        TokenRequestDTO tokenRequestDTO = new TokenRequestDTO("test@example.com", "password");
+        TokenResponseDTO expectedResponse = new TokenResponseDTO("Bearer", "TOKEN", "TOKEN");
         given(authenticationManagerBuilder.getObject()).willReturn(authenticationManager);
         given(authenticationManager.authenticate(any())).willReturn(authentication);
         given(jwtTokenProvider.generateToken(authentication)).willReturn(expectedResponse);
 
         //when
-        TokenResponse actualResponse = authService.login(tokenRequest);
+        TokenResponseDTO actualResponse = authService.login(tokenRequestDTO);
 
         //then
         assertThat(actualResponse.getAccessToken()).isEqualTo(expectedResponse.getAccessToken());

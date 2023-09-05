@@ -1,6 +1,9 @@
 package com.triplog.api.user.ui;
 
-import static com.triplog.api.user.constants.UserConstants.*;
+import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_EMAIL_EMPTY;
+import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_EMAIL_INVALID;
+import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_PASSWORD_EMPTY;
+import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_PASSWORD_LENGTH_MIN;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -11,12 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.triplog.api.ControllerTest;
-import com.triplog.api.user.dto.UserCreateRequest;
+import com.triplog.api.BaseControllerTest;
+import com.triplog.api.user.dto.UserCreateRequestDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.MvcResult;
 
-class UserControllerTest extends ControllerTest {
+class UserControllerTest extends BaseControllerTest {
 
     private final String email = "test@test.com";
     private final String password = "12345678";
@@ -25,7 +29,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("사용자를 등록할 수 있다.")
     void createUser() throws Exception {
         //given
-        UserCreateRequest userCreateRequest = UserCreateRequest.builder()
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
                 .email(email)
                 .password(password)
                 .build();
@@ -34,7 +38,7 @@ class UserControllerTest extends ControllerTest {
         mockMvc.perform(post("/api/user")
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userCreateRequest)))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("user/create",
@@ -50,7 +54,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("이메일 없이 사용자를 등록할 수 없다.")
     void createUser_emptyEmail() throws Exception {
         //given
-        UserCreateRequest userCreateRequest = UserCreateRequest.builder()
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
                 .email("")
                 .password(password)
                 .build();
@@ -59,7 +63,7 @@ class UserControllerTest extends ControllerTest {
         mockMvc.perform(post("/api/user")
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userCreateRequest)))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("email"))
@@ -70,7 +74,7 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("잘못된 이메일로 사용자를 등록할 수 없다.")
     void createUser_invalidEmail() throws Exception {
         //given
-        UserCreateRequest userCreateRequest = UserCreateRequest.builder()
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
                 .email("test")
                 .password(password)
                 .build();
@@ -79,7 +83,7 @@ class UserControllerTest extends ControllerTest {
         mockMvc.perform(post("/api/user")
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userCreateRequest)))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("email"))
@@ -90,27 +94,29 @@ class UserControllerTest extends ControllerTest {
     @DisplayName("비밀번호 없이 사용자를 등록할 수 없다.")
     void createUser_emptyPassword() throws Exception {
         //given
-        UserCreateRequest userCreateRequest = UserCreateRequest.builder()
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
                 .email(email)
                 .password("")
                 .build();
 
         //when then
-        mockMvc.perform(post("/api/user")
+        MvcResult mvcResult = mockMvc.perform(post("/api/user")
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userCreateRequest)))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].field").value("password"))
-                .andExpect(jsonPath("$.errors[0].message").value(MESSAGE_USER_PASSWORD_EMPTY));
+                .andReturn();
+        checkJsonResponse(mvcResult, "$.errors[*].field", "password");
+        checkJsonResponse(mvcResult, "$.errors[*].message", MESSAGE_USER_PASSWORD_EMPTY);
     }
+
 
     @Test
     @DisplayName("8자 미만의 비밀번호로 사용자를 등록할 수 없다.")
     void createUser_shortPassword() throws Exception {
         //given
-        UserCreateRequest userCreateRequest = UserCreateRequest.builder()
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
                 .email(email)
                 .password("123")
                 .build();
@@ -119,7 +125,7 @@ class UserControllerTest extends ControllerTest {
         mockMvc.perform(post("/api/user")
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userCreateRequest)))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errors[0].field").value("password"))

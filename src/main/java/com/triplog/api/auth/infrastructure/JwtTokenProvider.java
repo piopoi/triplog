@@ -3,7 +3,7 @@ package com.triplog.api.auth.infrastructure;
 import static com.triplog.api.auth.constants.AuthConstants.*;
 
 import com.triplog.api.auth.application.UserDetailServiceImpl;
-import com.triplog.api.auth.dto.TokenResponse;
+import com.triplog.api.auth.dto.TokenResponseDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -44,11 +44,11 @@ public class JwtTokenProvider {
         this.expirationTimeMillis = expirationTimeMillis;
     }
 
-    public TokenResponse generateToken(Authentication authentication) {
+    public TokenResponseDTO generateToken(Authentication authentication) {
         String accessToken = generateAccessToken(authentication);
         String refreshToken = generateRefreshToken();
 
-        return TokenResponse.builder()
+        return TokenResponseDTO.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

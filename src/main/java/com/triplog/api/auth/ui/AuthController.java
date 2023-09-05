@@ -1,8 +1,8 @@
 package com.triplog.api.auth.ui;
 
 import com.triplog.api.auth.application.AuthService;
-import com.triplog.api.auth.dto.TokenRequest;
-import com.triplog.api.auth.dto.TokenResponse;
+import com.triplog.api.auth.dto.TokenRequestDTO;
+import com.triplog.api.auth.dto.TokenResponseDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +19,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody @Valid TokenRequest tokenRequest) {
-        TokenResponse token = authService.login(tokenRequest);
-        return ResponseEntity.ok().body(token);
+    public ResponseEntity<TokenResponseDTO> login(@RequestBody @Valid TokenRequestDTO tokenRequestDTO) {
+        TokenResponseDTO tokenResponseDTO = authService.login(tokenRequestDTO);
+        return ResponseEntity.ok().body(tokenResponseDTO);
     }
 }
 

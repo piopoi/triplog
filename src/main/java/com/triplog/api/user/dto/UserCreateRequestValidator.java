@@ -15,14 +15,14 @@ public class UserCreateRequestValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return UserCreateRequest.class.isAssignableFrom(clazz);
+        return UserCreateRequestDTO.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
-        UserCreateRequest userCreateRequest = (UserCreateRequest) target;
+        UserCreateRequestDTO userCreateRequestDTO = (UserCreateRequestDTO) target;
 
-        if(userCreateRequest.getPassword().length() < passwordLengthMin) {
+        if(userCreateRequestDTO.getPassword().length() < passwordLengthMin) {
             errors.rejectValue("password", "length_min", MESSAGE_USER_PASSWORD_LENGTH_MIN);
         }
     }

@@ -24,7 +24,7 @@ import org.springframework.validation.FieldError;
  */
 @Getter
 @ToString
-public class ErrorResponse {
+public class ErrorResponseDTO {
 
     private final int httpStatusCode;
     private final HttpStatus httpStatus;
@@ -32,26 +32,26 @@ public class ErrorResponse {
     private final List<CustomFieldError> errors;
 
     @Builder
-    private ErrorResponse(HttpStatus httpStatus, String message, List<CustomFieldError> errors) {
+    private ErrorResponseDTO(HttpStatus httpStatus, String message, List<CustomFieldError> errors) {
         this.httpStatusCode = httpStatus.value();
         this.httpStatus = httpStatus;
         this.message = message;
         this.errors = errors;
     }
 
-    public static ErrorResponse of(HttpStatus httpStatus, String message) {
-        return ErrorResponse.builder()
+    public static ErrorResponseDTO of(HttpStatus httpStatus, String message) {
+        return ErrorResponseDTO.builder()
                 .httpStatus(httpStatus)
                 .message(message)
                 .errors(Collections.emptyList())
                 .build();
     }
 
-    public static ErrorResponse of(HttpStatus httpStatus, String message, List<FieldError> fieldErrors) {
+    public static ErrorResponseDTO of(HttpStatus httpStatus, String message, List<FieldError> fieldErrors) {
         List<CustomFieldError> customFieldErrors = fieldErrors.stream()
                 .map(CustomFieldError::new)
                 .toList();
-        return ErrorResponse.builder()
+        return ErrorResponseDTO.builder()
                 .httpStatus(httpStatus)
                 .message(message)
                 .errors(customFieldErrors)
