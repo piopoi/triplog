@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class PostCreateResponseDTO {
+public class PostGetResponseDTO {
 
     private final Long id;
     private final String title;
@@ -13,15 +13,15 @@ public class PostCreateResponseDTO {
     private final Long userId;
 
     @Builder
-    public PostCreateResponseDTO(Long id, String title, String content, Long userId) {
+    private PostGetResponseDTO(Long id, String title, String content, Long userId) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.userId = userId;
     }
 
-    public static PostCreateResponseDTO from(Post post) {
-        return PostCreateResponseDTO.builder()
+    public static PostGetResponseDTO from(Post post) {
+        return PostGetResponseDTO.builder()
                 .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())

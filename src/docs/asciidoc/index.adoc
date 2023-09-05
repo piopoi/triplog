@@ -27,3 +27,12 @@ include::{snippets}/post/create/http-request.adoc[]
 include::{snippets}/post/create/request-fields.adoc[]
 === 응답
 include::{snippets}/post/create/http-response.adoc[]
+
+== 글 조회
+=== 요청
+include::{snippets}/post/find/http-request.adoc[]
+include::{snippets}/post/find/path-parameters.adoc[]
+=== 응답
+include::{snippets}/post/find/http-response.adoc[]
+include::{snippets}/post/find/response-fields.adoc[]
+

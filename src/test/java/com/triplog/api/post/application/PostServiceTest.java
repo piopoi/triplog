@@ -1,11 +1,13 @@
 package com.triplog.api.post.application;
 
+import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_NOT_EXISTS;
 import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_NOT_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.triplog.api.BaseTest;
-import com.triplog.api.post.dto.PostCreateRequestDTO;
-import com.triplog.api.post.dto.PostCreateResponseDTO;
+import com.triplog.api.post.domain.Post;
+import com.triplog.api.post.dto.PostGetResponseDTO;
 import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.application.UserService;
 import com.triplog.api.user.domain.User;
@@ -30,35 +32,49 @@ class PostServiceTest extends BaseTest {
     @Autowired
     private UserRepository userRepository;
 
+    private Post post;
     private User user;
     private Long userId;
 
     @BeforeEach
     void setUp() {
-        postRepository.deleteAll();
-        userRepository.deleteAll();
-
         userId = userService.createUser(new UserCreateRequestDTO("test@test.com", "12345678"));
         user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(MESSAGE_USER_NOT_EXISTS));
+        post = postRepository.save(new Post(title, content, user));
     }
 
     @Test
     @DisplayName("게시글을 생성할 수 있다.")
     void createPost() {
-        //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
-                .title(title)
-                .content(content)
-                .build();
+        //then
+        Post findPost = postRepository.findById(post.getId()).orElseThrow();
+        assertThat(findPost).isNotNull();
+        assertThat(findPost.getTitle()).isEqualTo(title);
+        assertThat(findPost.getContent()).isEqualTo(content);
+        assertThat(findPost.getUser().getId()).isEqualTo(userId);
+    }
 
+    @Test
+    @DisplayName("id로 게시글을 조회할 수 있다.")
+    void getPost() {
         //when
-        PostCreateResponseDTO postCreateResponseDTO = postService.createPost(postCreateRequestDTO, user);
+        PostGetResponseDTO postGetResponseDTO = postService.getPost(post.getId());
 
         //then
-        assertThat(postCreateResponseDTO).isNotNull();
-        assertThat(postCreateResponseDTO.getTitle()).isEqualTo(title);
-        assertThat(postCreateResponseDTO.getContent()).isEqualTo(content);
-        assertThat(postCreateResponseDTO.getUserId()).isEqualTo(userId);
+        assertThat(postGetResponseDTO).isNotNull();
+        assertThat(postGetResponseDTO.getId()).isEqualTo(post.getId());
+        assertThat(postGetResponseDTO.getTitle()).isEqualTo(post.getTitle());
+        assertThat(postGetResponseDTO.getContent()).isEqualTo(post.getContent());
+        assertThat(postGetResponseDTO.getUserId()).isEqualTo(post.getUser().getId());
+    }
+
+    @Test
+    @DisplayName("잘못된 id로 게시글을 조회할 수 없다.")
+    void getPost_invalidId() {
+        //when then
+        assertThatThrownBy(() -> postService.getPost(99L))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage(MESSAGE_POST_NOT_EXISTS);
     }
 }

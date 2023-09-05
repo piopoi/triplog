@@ -25,7 +25,7 @@ public class BaseControllerTest extends BaseTest {
 
     protected void checkJsonResponse(MvcResult mvcResult, String expression, String findString) throws UnsupportedEncodingException {
         String jsonResponse = mvcResult.getResponse().getContentAsString();
-        List<String> messages = JsonPath.read(jsonResponse, expression);
-        assertThat(messages).contains(findString);
+        List<String> strings = JsonPath.read(jsonResponse, expression);
+        assertThat(strings).contains(findString);
     }
 }

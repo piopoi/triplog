@@ -1,10 +1,16 @@
 package com.triplog.api.post.ui;
 
-import static com.triplog.api.post.constants.PostConstants.*;
+import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_CONTENT_EMPTY;
+import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_NOT_EXISTS;
+import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_TITLE_EMPTY;
+import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_TITLE_LENGTH;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -23,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 
 public class PostControllerTest extends BaseControllerTest {
 
@@ -30,14 +37,19 @@ public class PostControllerTest extends BaseControllerTest {
     private final String content = "bar";
 
     @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
     private UserRepository userRepository;
 
     private UserDetailsImpl userDetailsImpl;
+    private Post post;
 
     @BeforeEach
     void setUp() {
         User user = userRepository.save(new User("test@test.com", "12345678"));
         userDetailsImpl = new UserDetailsImpl(user);
+        post = postRepository.save(new Post(title, content, user));
     }
 
     @Test
@@ -142,4 +154,47 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("$.errors[0].message").value(MESSAGE_POST_CONTENT_EMPTY));
     }
 
+    @Test
+    @DisplayName("id로 게시글을 조회할 수 있다.")
+    void getPost() throws Exception {
+        //when then
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/post/{id}", post.getId())
+                        .accept(APPLICATION_JSON)
+                        .with(user(userDetailsImpl)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post/find",
+                        pathParameters(
+                                parameterWithName("id").description("게시글 아이디")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("게시글 아이디"),
+                                fieldWithPath("title").description("제목"),
+                                fieldWithPath("content").description("본문"),
+                                fieldWithPath("userId").description("작성자 아이디")
+                        ))
+                );
+    }
+
+    @Test
+    @DisplayName("잘못된 id로 게시글을 조회할 수 없다.")
+    void getPost_invalidId() throws Exception {
+        //when then
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/post/{id}", 99L)
+                        .accept(APPLICATION_JSON)
+                        .with(user(userDetailsImpl)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(MESSAGE_POST_NOT_EXISTS));
+    }
+
+    @Test
+    @DisplayName("사용자가 아니면 게시글을 조회할 수 없다.")
+    void getPost_unauthorized() throws Exception {
+        //when then
+        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/post/{id}", post.getId())
+                        .accept(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 }
