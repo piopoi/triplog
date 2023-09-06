@@ -12,6 +12,7 @@ import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.triplog.api.BaseControllerTest;
@@ -196,7 +197,7 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("모든 게시글을 조회할 수 있다.")
     void getAllPosts() throws Exception {
         //given
-        IntStream.range(1, 6)
+        IntStream.range(1, 10)
                 .forEach(i -> postRepository.save(new Post(title + i, content + i, user)));
 
         //when then
@@ -205,6 +206,9 @@ public class PostControllerTest extends BaseControllerTest {
                         .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(5))
+                .andExpect(jsonPath("$[0].title").value(title + "9"))
+                .andExpect(jsonPath("$[0].content").value(content + "9"))
                 .andDo(document("post/getAll",
                         responseFields(
                                 fieldWithPath("[].id").description("게시글 아이디"),

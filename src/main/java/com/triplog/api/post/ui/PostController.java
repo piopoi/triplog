@@ -1,5 +1,7 @@
 package com.triplog.api.post.ui;
 
+import static org.springframework.data.domain.Sort.Direction.DESC;
+
 import com.triplog.api.auth.domain.UserDetailsImpl;
 import com.triplog.api.post.application.PostService;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
@@ -9,6 +11,8 @@ import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +44,9 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<List<PostGetResponseDTO>> getAllPosts() {
-        List<PostGetResponseDTO> postGetResponseDTOs = postService.getAllPosts();
+    public ResponseEntity<List<PostGetResponseDTO>> getAllPosts(@PageableDefault(size = 5, direction = DESC, sort = {"id"})
+                                                                Pageable pageable) {
+        List<PostGetResponseDTO> postGetResponseDTOs = postService.getAllPosts(pageable);
         return ResponseEntity.ok().body(postGetResponseDTOs);
     }
 }

@@ -10,6 +10,7 @@ import com.triplog.api.user.domain.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +40,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public List<PostGetResponseDTO> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
+    public List<PostGetResponseDTO> getAllPosts(Pageable pageable) {
+        List<Post> posts = postRepository.findAll(pageable).getContent();
         return posts.stream()
                 .map(PostGetResponseDTO::from)
                 .toList();

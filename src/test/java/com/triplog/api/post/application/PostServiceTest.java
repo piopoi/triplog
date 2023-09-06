@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 
 class PostServiceTest extends BaseTest {
 
@@ -84,12 +85,14 @@ class PostServiceTest extends BaseTest {
     @DisplayName("모든 게시글을 조회할 수 있다.")
     void getAllPosts() {
         //given
-        IntStream.range(1, 6)
+        Pageable pageable = Pageable.ofSize(5);
+        IntStream.range(1, 10)
                 .forEach(i -> postRepository.save(new Post(title + i, content + i, user)));
 
-        //when then
-        List<PostGetResponseDTO> postGetResponseDTOs = postService.getAllPosts();
+        //when
+        List<PostGetResponseDTO> postGetResponseDTOs = postService.getAllPosts(pageable);
 
+        //then
         assertThat(postGetResponseDTOs).hasSize(5);
     }
 }
