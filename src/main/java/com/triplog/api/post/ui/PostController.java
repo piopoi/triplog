@@ -6,6 +6,7 @@ import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,11 @@ public class PostController {
     public ResponseEntity<PostGetResponseDTO> getPost(@PathVariable Long postId) {
         PostGetResponseDTO postGetResponseDTO = postService.getPost(postId);
         return ResponseEntity.ok().body(postGetResponseDTO);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<PostGetResponseDTO>> getAllPosts() {
+        List<PostGetResponseDTO> postGetResponseDTOs = postService.getAllPosts();
+        return ResponseEntity.ok().body(postGetResponseDTOs);
     }
 }

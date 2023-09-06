@@ -2,6 +2,7 @@ package com.triplog.api.post.ui;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -20,11 +21,11 @@ import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.repository.UserRepository;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 
 public class PostControllerTest extends BaseControllerTest {
 
@@ -37,14 +38,13 @@ public class PostControllerTest extends BaseControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    private User user;
     private UserDetailsImpl userDetailsImpl;
-    private Post post;
 
     @BeforeEach
     void setUp() {
-        User user = userRepository.save(new User("test@test.com", "12345678"));
+        user = userRepository.save(new User("test@test.com", "12345678"));
         userDetailsImpl = new UserDetailsImpl(user);
-        post = postRepository.save(new Post(title, content, user));
     }
 
     @Test
@@ -146,13 +146,16 @@ public class PostControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("id로 게시글을 조회할 수 있다.")
     void getPost() throws Exception {
+        //given
+        Post post = postRepository.save(new Post(title, content, user));
+
         //when then
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/post/{id}", post.getId())
+        mockMvc.perform(get("/api/post/{id}", post.getId())
                         .accept(APPLICATION_JSON)
                         .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("post/find",
+                .andDo(document("post/get",
                         pathParameters(
                                 parameterWithName("id").description("게시글 아이디")
                         ),
@@ -169,7 +172,7 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("잘못된 id로 게시글을 조회할 수 없다.")
     void getPost_invalidId() throws Exception {
         //when then
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/post/{id}", 99L)
+        mockMvc.perform(get("/api/post/{id}", 99L)
                         .accept(APPLICATION_JSON)
                         .with(user(userDetailsImpl)))
                 .andDo(print())
@@ -179,10 +182,36 @@ public class PostControllerTest extends BaseControllerTest {
     @Test
     @DisplayName("권한 없이 게시글을 조회할 수 없다.")
     void getPost_unauth() throws Exception {
+        //given
+        Post post = postRepository.save(new Post(title, content, user));
+
         //when then
-        mockMvc.perform(RestDocumentationRequestBuilders.get("/api/post/{id}", post.getId())
+        mockMvc.perform(get("/api/post/{id}", post.getId())
                         .accept(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("모든 게시글을 조회할 수 있다.")
+    void getAllPosts() throws Exception {
+        //given
+        IntStream.range(1, 6)
+                .forEach(i -> postRepository.save(new Post(title + i, content + i, user)));
+
+        //when then
+        mockMvc.perform(get("/api/post")
+                        .accept(APPLICATION_JSON)
+                        .with(user(userDetailsImpl)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post/getAll",
+                        responseFields(
+                                fieldWithPath("[].id").description("게시글 아이디"),
+                                fieldWithPath("[].title").description("제목"),
+                                fieldWithPath("[].content").description("본문"),
+                                fieldWithPath("[].userId").description("작성자 아이디")
+                        ))
+                );
     }
 }

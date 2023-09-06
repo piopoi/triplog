@@ -7,6 +7,7 @@ import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
 import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.domain.User;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,5 +35,12 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(MESSAGE_POST_NOT_EXISTS));
         return PostGetResponseDTO.from(post);
+    }
+
+    public List<PostGetResponseDTO> getAllPosts() {
+        List<Post> posts = postRepository.findAll();
+        return posts.stream()
+                .map(PostGetResponseDTO::from)
+                .toList();
     }
 }

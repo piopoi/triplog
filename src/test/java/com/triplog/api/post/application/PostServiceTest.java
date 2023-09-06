@@ -11,6 +11,8 @@ import com.triplog.api.user.application.UserService;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.repository.UserRepository;
+import java.util.List;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +32,6 @@ class PostServiceTest extends BaseTest {
     @Autowired
     private UserRepository userRepository;
 
-    private Post post;
     private User user;
     private Long userId;
 
@@ -38,12 +39,14 @@ class PostServiceTest extends BaseTest {
     void setUp() {
         userId = userService.createUser(new UserCreateRequestDTO("test@test.com", "12345678"));
         user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-        post = postRepository.save(new Post(title, content, user));
     }
 
     @Test
     @DisplayName("게시글을 생성할 수 있다.")
     void createPost() {
+        //given
+        Post post = postRepository.save(new Post(title, content, user));
+
         //then
         Post findPost = postRepository.findById(post.getId()).orElseThrow();
         assertThat(findPost).isNotNull();
@@ -55,6 +58,9 @@ class PostServiceTest extends BaseTest {
     @Test
     @DisplayName("id로 게시글을 조회할 수 있다.")
     void getPost() {
+        //given
+        Post post = postRepository.save(new Post(title, content, user));
+
         //when
         PostGetResponseDTO postGetResponseDTO = postService.getPost(post.getId());
 
@@ -72,5 +78,18 @@ class PostServiceTest extends BaseTest {
         //when then
         assertThatThrownBy(() -> postService.getPost(99L))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("모든 게시글을 조회할 수 있다.")
+    void getAllPosts() {
+        //given
+        IntStream.range(1, 6)
+                .forEach(i -> postRepository.save(new Post(title + i, content + i, user)));
+
+        //when then
+        List<PostGetResponseDTO> postGetResponseDTOs = postService.getAllPosts();
+
+        assertThat(postGetResponseDTOs).hasSize(5);
     }
 }
