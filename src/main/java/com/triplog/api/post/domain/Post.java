@@ -34,7 +34,7 @@ public class Post extends BaseEntity {
     private String title;
 
     @Lob
-    @Column(nullable = false, columnDefinition = "CLOB")
+    @Column(nullable = false, columnDefinition = "BLOB")
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
