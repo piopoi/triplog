@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
 
+    @Transactional
     public Long createPost(PostCreateRequestDTO postCreateRequestDTO, User user) {
         Post post = Post.builder()
                 .title(postCreateRequestDTO.getTitle())
@@ -31,12 +31,14 @@ public class PostService {
         return savedPost.getId();
     }
 
+    @Transactional(readOnly = true)
     public PostGetResponseDTO getPost(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(MESSAGE_POST_NOT_EXISTS));
         return PostGetResponseDTO.from(post);
     }
 
+    @Transactional(readOnly = true)
     public List<PostGetResponseDTO> getAllPosts() {
         List<Post> posts = postRepository.findAll();
         return posts.stream()
