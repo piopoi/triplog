@@ -3,6 +3,7 @@ package com.triplog.api.exception.dto;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,22 +27,20 @@ import org.springframework.validation.FieldError;
 @ToString
 public class ErrorResponseDTO {
 
-    private final int httpStatusCode;
-    private final HttpStatus httpStatus;
+    private final int statusCode;
     private final String message;
     private final List<CustomFieldError> errors;
 
-    @Builder
-    private ErrorResponseDTO(HttpStatus httpStatus, String message, List<CustomFieldError> errors) {
-        this.httpStatusCode = httpStatus.value();
-        this.httpStatus = httpStatus;
+    @Builder(access = AccessLevel.PRIVATE)
+    private ErrorResponseDTO(int statusCode, String message, List<CustomFieldError> errors) {
+        this.statusCode = statusCode;
         this.message = message;
         this.errors = errors;
     }
 
     public static ErrorResponseDTO of(HttpStatus httpStatus, String message) {
         return ErrorResponseDTO.builder()
-                .httpStatus(httpStatus)
+                .statusCode(httpStatus.value())
                 .message(message)
                 .errors(Collections.emptyList())
                 .build();
@@ -52,7 +51,7 @@ public class ErrorResponseDTO {
                 .map(CustomFieldError::new)
                 .toList();
         return ErrorResponseDTO.builder()
-                .httpStatus(httpStatus)
+                .statusCode(httpStatus.value())
                 .message(message)
                 .errors(customFieldErrors)
                 .build();
