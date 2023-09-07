@@ -23,10 +23,7 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("사용자를 등록할 수 있다.")
     void createUser() throws Exception {
         //given
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
-                .email(email)
-                .password(password)
-                .build();
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password);
 
         //when then
         mockMvc.perform(post("/api/user")
@@ -48,10 +45,7 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("이메일 없이 사용자를 등록할 수 없다.")
     void createUser_emptyEmail() throws Exception {
         //given
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
-                .email("")
-                .password(password)
-                .build();
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of("", password);
 
         //when then
         mockMvc.perform(post("/api/user")
@@ -66,10 +60,7 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("잘못된 이메일로 사용자를 등록할 수 없다.")
     void createUser_invalidEmail() throws Exception {
         //given
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
-                .email("test")
-                .password(password)
-                .build();
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of("test", password);
 
         //when then
         mockMvc.perform(post("/api/user")
@@ -84,10 +75,7 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("비밀번호 없이 사용자를 등록할 수 없다.")
     void createUser_emptyPassword() throws Exception {
         //given
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
-                .email(email)
-                .password("")
-                .build();
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, "");
 
         //when then
         mockMvc.perform(post("/api/user")
@@ -103,10 +91,7 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("8자 미만의 비밀번호로 사용자를 등록할 수 없다.")
     void createUser_shortPassword() throws Exception {
         //given
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
-                .email(email)
-                .password("123")
-                .build();
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, "123");
 
         //when then
         mockMvc.perform(post("/api/user")

@@ -1,11 +1,13 @@
 package com.triplog.api.user.domain;
 
 import com.triplog.api.BaseEntity;
+import com.triplog.api.user.dto.UserCreateRequestDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -35,14 +37,21 @@ public class User extends BaseEntity {
     @Column(nullable = false, length = 10)
     private String role;
 
-    public User() {
+    protected User() {
     }
 
-    @Builder
-    public User(String email, String password) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private User(String email, String password) {
         this.email = email;
         this.password = password;
         this.role = Role.USER.getValue();
+    }
+
+    public static User from(UserCreateRequestDTO userCreateRequestDTO) {
+        return User.builder()
+                .email(userCreateRequestDTO.getEmail())
+                .password(userCreateRequestDTO.getPassword())
+                .build();
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder) {

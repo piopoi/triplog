@@ -1,7 +1,10 @@
 package com.triplog.api.post.domain;
 
 import com.triplog.api.BaseEntity;
+import com.triplog.api.post.dto.PostCreateRequestDTO;
+import com.triplog.api.post.dto.PostUpdateRequestDTO;
 import com.triplog.api.user.domain.User;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -41,13 +45,38 @@ public class Post extends BaseEntity {
     @JoinColumn(nullable = false)
     private User user;
 
-    public Post() {
+    protected Post() {
     }
 
-    @Builder
-    public Post(String title, String content, User user) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Post(String title, String content, User user) {
         this.title = title;
         this.content = content;
         this.user = user;
+    }
+
+    public static Post of(PostCreateRequestDTO postCreateRequestDTO, User user) {
+        return Post.builder()
+                .title(postCreateRequestDTO.getTitle())
+                .content(postCreateRequestDTO.getContent())
+                .user(user)
+                .build();
+    }
+
+    public void update(PostUpdateRequestDTO postUpdateRequestDTO) {
+        updateTitle(postUpdateRequestDTO.getTitle());
+        updateContent(postUpdateRequestDTO.getContent());
+    }
+
+    private void updateTitle(String title) {
+        if (!StringUtils.isBlank(title)) {
+            this.title = title;
+        }
+    }
+
+    private void updateContent(String content) {
+        if (!StringUtils.isBlank(content)) {
+            this.content = content;
+        }
     }
 }

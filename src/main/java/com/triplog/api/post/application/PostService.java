@@ -5,6 +5,7 @@ import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_NOT_EXIS
 import com.triplog.api.post.domain.Post;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
+import com.triplog.api.post.dto.PostUpdateRequestDTO;
 import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.domain.User;
 import java.util.List;
@@ -23,19 +24,14 @@ public class PostService {
 
     @Transactional
     public Long createPost(PostCreateRequestDTO postCreateRequestDTO, User user) {
-        Post post = Post.builder()
-                .title(postCreateRequestDTO.getTitle())
-                .content(postCreateRequestDTO.getContent())
-                .user(user)
-                .build();
+        Post post = Post.of(postCreateRequestDTO, user);
         Post savedPost = postRepository.save(post);
         return savedPost.getId();
     }
 
     @Transactional(readOnly = true)
     public PostGetResponseDTO getPost(Long postId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_POST_NOT_EXISTS));
+        Post post = findPostById(postId);
         return PostGetResponseDTO.from(post);
     }
 
@@ -45,5 +41,22 @@ public class PostService {
         return posts.stream()
                 .map(PostGetResponseDTO::from)
                 .toList();
+    }
+
+    @Transactional
+    public void updatePost(Long postId, PostUpdateRequestDTO postUpdateRequestDTO) {
+        Post post = findPostById(postId);
+        post.update(postUpdateRequestDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isPostAuthor(Long postId, User user) {
+        Post post = findPostById(postId);
+        return post.getUser().equals(user);
+    }
+
+    private Post findPostById(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_POST_NOT_EXISTS));
     }
 }

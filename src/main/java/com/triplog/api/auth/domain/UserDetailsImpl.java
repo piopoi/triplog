@@ -4,6 +4,8 @@ import com.triplog.api.user.domain.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,8 +18,15 @@ public class UserDetailsImpl implements UserDetails {
 
     private final User user;
 
-    public UserDetailsImpl(User user) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private UserDetailsImpl(User user) {
         this.user = user;
+    }
+
+    public static UserDetailsImpl from(User user) {
+        return UserDetailsImpl.builder()
+                .user(user)
+                .build();
     }
 
     @Override

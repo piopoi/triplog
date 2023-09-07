@@ -14,7 +14,7 @@ public class BaseTest {
     protected DatabaseCleanup databaseCleanup;
 
     @BeforeEach
-    protected void basicSetUp() {
+    protected void baseTestSetUp() {
         databaseCleanup.execute();
     }
 }

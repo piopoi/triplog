@@ -19,7 +19,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     public Long createUser(UserCreateRequestDTO userCreateRequestDTO) {
-        User user = userCreateRequestDTO.toUser();
+        User user = User.from(userCreateRequestDTO);
         user.encodePassword(passwordEncoder);
         return userRepository.save(user).getId();
     }
