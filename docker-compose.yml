@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  database:
+    container_name: triplog_db
+    image: mysql:8.0.34
+    volumes:
+      - ./docker/mysql:/var/lib/mysql:rw
+    ports:
+      - "3307:3306"
+    restart: always
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    environment:
+#      MYSQL_ROOT_HOST: %
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: triplog
+      MYSQL_USER: triplog
+      MYSQL_PASSWORD: triplog123#
+    networks:
+      - triplog_network
+
+  application:
+    container_name: triplog_app
+    build: .
+    volumes:
+      - ./logs:/app/logs
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/triplog?serverTimezone=Asia/Seoul&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: triplog
+      SPRING_DATASOURCE_PASSWORD: triplog123#
+    networks:
+      - triplog_network
+
+networks:
+  triplog_network:

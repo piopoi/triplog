@@ -45,6 +45,7 @@ public class SecurityConfig {
                 //.csrf(AbstractHttpConfigurer::disable)
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(toH2Console())
+                        .ignoringRequestMatchers("/docs/**")
                         .disable()
                 )
                 .sessionManagement(sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
