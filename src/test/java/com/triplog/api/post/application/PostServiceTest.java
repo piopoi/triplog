@@ -121,6 +121,17 @@ class PostServiceTest extends BaseTest {
     }
 
     @Test
+    @DisplayName("잘못된 id로 게시글을 수정할 수 없다.")
+    void updatePost_invalidId() {
+        //given
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
+
+        //when then
+        assertThatThrownBy(() -> postService.updatePost(99L, postUpdateRequestDTO))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("게시글의 제목만 수정할 수 있다.")
     void updatePost_onlyTitle() {
         //given
@@ -178,6 +189,35 @@ class PostServiceTest extends BaseTest {
 
         //then
         assertThat(isAuthor).isFalse();
+    }
+
+    @Test
+    @DisplayName("잘못된 id로 글 작성자 여부를 확인할 수 없다.")
+    void isPostAuthor_invalidId() {
+        //when then
+        assertThatThrownBy(() -> postService.isPostAuthor(99L, user))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("게시글을 삭제할 수 있다.")
+    void deletePost() {
+        //given
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, user));
+
+        //when
+        postService.deletePost(post.getId());
+
+        //then
+        assertThat(postRepository.count()).isZero();
+    }
+
+    @Test
+    @DisplayName("잘못된 id로 게시글을 삭제할 수 없다.")
+    void deletePost_invalidId() {
+        //when then
+        assertThatThrownBy(() -> postService.deletePost(99L))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private Post findPostById(Long postId) {

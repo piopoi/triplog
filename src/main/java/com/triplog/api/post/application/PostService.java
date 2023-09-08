@@ -55,6 +55,12 @@ public class PostService {
         return post.getUser().equals(user);
     }
 
+    @Transactional
+    public void deletePost(Long postId) {
+        findPostById(postId);
+        postRepository.deleteById(postId);
+    }
+
     private Post findPostById(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(MESSAGE_POST_NOT_EXISTS));

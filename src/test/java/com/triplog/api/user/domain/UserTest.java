@@ -2,16 +2,15 @@ package com.triplog.api.user.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.triplog.api.BaseTest;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@SpringBootTest
-class UserTest {
+class UserTest extends BaseTest {
 
     private final String email = "test@test.com";
     private final String password = "12345678";

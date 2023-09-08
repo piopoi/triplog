@@ -9,6 +9,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -226,7 +227,7 @@ public class PostControllerTest extends BaseControllerTest {
                         .with(user(userDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andDo(document("post/create",
+                .andDo(document("post/update",
                         pathParameters(
                                 parameterWithName("id").description("게시글 아이디")
                         ),
@@ -286,6 +287,48 @@ public class PostControllerTest extends BaseControllerTest {
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(fakeUserDetailsImpl)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("게시글을 삭제할 수 있다.")
+    void deletePost() throws Exception {
+        //given
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, userDetailsImpl.getUser()));
+
+        //when then
+        mockMvc.perform(RestDocumentationRequestBuilders.delete("/api/post/{id}", post.getId())
+                        .with(user(userDetailsImpl)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("post/delete",
+                        pathParameters(
+                                parameterWithName("id").description("게시글 아이디")
+                        ))
+                );
+    }
+
+    @Test
+    @DisplayName("잘못된 id로 게시글을 삭제할 수 없다.")
+    void deletePost_invalidId() throws Exception {
+        //when then
+        mockMvc.perform(delete("/api/post/{id}", 99L)
+                        .with(user(userDetailsImpl)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("권한이 없으면 게시글을 삭제할 수 없다.")
+    void deletePost_unauth() throws Exception {
+        //given
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, userDetailsImpl.getUser()));
+
+        //when then
+        mockMvc.perform(delete("/api/post/{id}", post.getId()))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }

@@ -3,6 +3,7 @@ package com.triplog.api.post.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.triplog.api.BaseTest;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
 import com.triplog.api.user.domain.User;
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-class PostTest {
+class PostTest extends BaseTest {
 
     private final String title = "foo";
     private final String content = "bar";
