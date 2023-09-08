@@ -1,4 +1,4 @@
-package com.triplog.api.auth.application;
+package com.triplog.api.auth.service;
 
 import static com.triplog.api.auth.constants.AuthConstants.*;
 

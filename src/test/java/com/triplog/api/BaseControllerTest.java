@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 @CustomAutoConfigureMockMvc
-@AutoConfigureRestDocs
+@AutoConfigureRestDocs()
 @ExtendWith(RestDocumentationExtension.class)
 public class BaseControllerTest extends BaseTest {
 

@@ -1,4 +1,4 @@
-package com.triplog.api.user.application;
+package com.triplog.api.user.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

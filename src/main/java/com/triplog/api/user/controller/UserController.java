@@ -1,6 +1,6 @@
-package com.triplog.api.user.ui;
+package com.triplog.api.user.controller;
 
-import com.triplog.api.user.application.UserService;
+import com.triplog.api.user.service.UserService;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.dto.UserCreateRequestValidator;
 import java.net.URI;

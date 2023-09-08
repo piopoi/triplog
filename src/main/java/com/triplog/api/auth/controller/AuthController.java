@@ -1,6 +1,6 @@
-package com.triplog.api.auth.ui;
+package com.triplog.api.auth.controller;
 
-import com.triplog.api.auth.application.AuthService;
+import com.triplog.api.auth.service.AuthService;
 import com.triplog.api.auth.dto.TokenRequestDTO;
 import com.triplog.api.auth.dto.TokenResponseDTO;
 import jakarta.validation.Valid;

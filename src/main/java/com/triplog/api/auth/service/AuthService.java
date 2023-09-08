@@ -1,4 +1,4 @@
-package com.triplog.api.auth.application;
+package com.triplog.api.auth.service;
 
 import com.triplog.api.auth.dto.TokenRequestDTO;
 import com.triplog.api.auth.dto.TokenResponseDTO;

@@ -1,4 +1,4 @@
-package com.triplog.api.auth.application;
+package com.triplog.api.auth.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

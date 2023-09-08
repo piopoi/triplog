@@ -1,4 +1,4 @@
-package com.triplog.api.post.application;
+package com.triplog.api.post.service;
 
 import static com.triplog.api.post.constants.PostConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,7 +10,7 @@ import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
 import com.triplog.api.post.repository.PostRepository;
-import com.triplog.api.user.application.UserService;
+import com.triplog.api.user.service.UserService;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.repository.UserRepository;

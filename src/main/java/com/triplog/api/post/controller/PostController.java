@@ -1,9 +1,9 @@
-package com.triplog.api.post.ui;
+package com.triplog.api.post.controller;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import com.triplog.api.auth.domain.UserDetailsImpl;
-import com.triplog.api.post.application.PostService;
+import com.triplog.api.post.service.PostService;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;

@@ -1,4 +1,4 @@
-package com.triplog.api.post.ui;
+package com.triplog.api.post.controller;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;

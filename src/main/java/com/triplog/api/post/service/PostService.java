@@ -1,4 +1,4 @@
-package com.triplog.api.post.application;
+package com.triplog.api.post.service;
 
 import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_NOT_EXISTS;
 

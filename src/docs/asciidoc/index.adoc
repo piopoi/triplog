@@ -42,3 +42,18 @@ include::{snippets}/post/getAll/http-request.adoc[]
 === 응답
 include::{snippets}/post/getAll/http-response.adoc[]
 include::{snippets}/post/getAll/response-fields.adoc[]
+
+== 글 수정
+=== 요청
+include::{snippets}/post/update/http-request.adoc[]
+include::{snippets}/post/update/path-parameters.adoc[]
+include::{snippets}/post/update/request-fields.adoc[]
+=== 응답
+include::{snippets}/post/update/http-response.adoc[]
+
+== 글 삭제
+=== 요청
+include::{snippets}/post/delete/http-request.adoc[]
+include::{snippets}/post/delete/path-parameters.adoc[]
+=== 응답
+include::{snippets}/post/delete/http-response.adoc[]

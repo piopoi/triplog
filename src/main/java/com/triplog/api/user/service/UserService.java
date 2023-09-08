@@ -1,4 +1,4 @@
-package com.triplog.api.user.application;
+package com.triplog.api.user.service;
 
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.dto.UserCreateRequestDTO;

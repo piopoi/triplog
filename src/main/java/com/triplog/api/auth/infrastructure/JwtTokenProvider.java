@@ -2,7 +2,7 @@ package com.triplog.api.auth.infrastructure;
 
 import static com.triplog.api.auth.constants.AuthConstants.*;
 
-import com.triplog.api.auth.application.UserDetailServiceImpl;
+import com.triplog.api.auth.service.UserDetailServiceImpl;
 import com.triplog.api.auth.dto.TokenResponseDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
