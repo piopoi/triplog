@@ -44,14 +44,14 @@ public class PostController {
     @GetMapping("/{postId}")
     public ResponseEntity<PostGetResponseDTO> getPost(@PathVariable Long postId) {
         PostGetResponseDTO postGetResponseDTO = postService.getPost(postId);
-        return ResponseEntity.ok().body(postGetResponseDTO);
+        return ResponseEntity.ok(postGetResponseDTO);
     }
 
     @GetMapping
     public ResponseEntity<List<PostGetResponseDTO>> getAllPosts(@PageableDefault(size = 5, direction = DESC, sort = {"id"})
                                                                 Pageable pageable) {
         List<PostGetResponseDTO> postGetResponseDTOs = postService.getAllPosts(pageable);
-        return ResponseEntity.ok().body(postGetResponseDTOs);
+        return ResponseEntity.ok(postGetResponseDTOs);
     }
 
     @PatchMapping("/{postId}")
