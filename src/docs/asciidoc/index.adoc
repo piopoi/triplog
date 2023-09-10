@@ -6,13 +6,6 @@
 :toclevels: 2
 :sectlinks:
 
-== 사용자 생성
-=== 요청
-include::{snippets}/user/create/http-request.adoc[]
-include::{snippets}/user/create/request-fields.adoc[]
-=== 응답
-include::{snippets}/user/create/http-response.adoc[]
-
 == 로그인
 === 요청
 include::{snippets}/auth/login/http-request.adoc[]
@@ -20,6 +13,29 @@ include::{snippets}/auth/login/request-fields.adoc[]
 === 응답
 include::{snippets}/auth/login/http-response.adoc[]
 include::{snippets}/auth/login/response-fields.adoc[]
+
+== 사용자 생성
+=== 요청
+include::{snippets}/user/create/http-request.adoc[]
+include::{snippets}/user/create/request-fields.adoc[]
+=== 응답
+include::{snippets}/user/create/http-response.adoc[]
+
+== 사용자 조회 (id)
+=== 요청
+include::{snippets}/user/getById/http-request.adoc[]
+include::{snippets}/user/getById/path-parameters.adoc[]
+=== 응답
+include::{snippets}/user/getById/http-response.adoc[]
+include::{snippets}/user/getById/response-fields.adoc[]
+
+== 사용자 조회 (email)
+=== 요청
+include::{snippets}/user/getByEmail/http-request.adoc[]
+include::{snippets}/user/getByEmail/request-fields.adoc[]
+=== 응답
+include::{snippets}/user/getByEmail/http-response.adoc[]
+include::{snippets}/user/getByEmail/response-fields.adoc[]
 
 == 글 등록
 === 요청

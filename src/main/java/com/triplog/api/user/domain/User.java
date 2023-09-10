@@ -2,8 +2,11 @@ package com.triplog.api.user.domain;
 
 import com.triplog.api.BaseEntity;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,23 +37,26 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, length = 10)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 5)
+    private Role role;
 
     protected User() {
     }
 
     @Builder(access = AccessLevel.PRIVATE)
-    private User(String email, String password) {
+    private User(String email, String password, Role role) {
         this.email = email;
         this.password = password;
-        this.role = Role.USER.getValue();
+        this.role = role;
     }
 
     public static User from(UserCreateRequestDTO userCreateRequestDTO) {
+        Role role = StringUtils.isBlank(userCreateRequestDTO.getRole()) ? Role.USER : Role.valueOf(userCreateRequestDTO.getRole());
         return User.builder()
                 .email(userCreateRequestDTO.getEmail())
                 .password(userCreateRequestDTO.getPassword())
+                .role(role)
                 .build();
     }
 

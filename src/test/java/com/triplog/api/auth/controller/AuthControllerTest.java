@@ -41,7 +41,7 @@ class AuthControllerTest extends BaseControllerTest {
     }
 
     @Test
-    @DisplayName("로그인 할 수 있다.")
+    @DisplayName("로그인(jwt) 할 수 있다.")
     void login() throws Exception {
         //given
         TokenRequestDTO tokenRequestDTO = TokenRequestDTO.of(email, password);

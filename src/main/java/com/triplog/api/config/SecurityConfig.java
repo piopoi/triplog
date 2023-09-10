@@ -1,10 +1,12 @@
-package com.triplog.api;
+package com.triplog.api.config;
 
 import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import com.triplog.api.auth.infrastructure.JwtAuthenticationFilter;
 import com.triplog.api.auth.infrastructure.JwtTokenProvider;
+import com.triplog.api.user.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,15 +39,16 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorizeHttpRequest -> authorizeHttpRequest
-                        .requestMatchers(new AntPathRequestMatcher("/api/post/**")).authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/auth/login/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/user/**", POST.name())).hasAuthority(Role.ADMIN.getValue())
+                        .anyRequest().authenticated()
                 )
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .formLogin(AbstractHttpConfigurer::disable)
                 //.csrf(AbstractHttpConfigurer::disable)
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(toH2Console())
-                        .ignoringRequestMatchers("/docs/**")
+                        .ignoringRequestMatchers(new AntPathRequestMatcher("/docs/**")) //API 문서 조회 URI
                         .disable()
                 )
                 .sessionManagement(sessionManager -> sessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

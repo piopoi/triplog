@@ -14,7 +14,6 @@ class UserTest extends BaseTest {
 
     private final String email = "test@test.com";
     private final String password = "12345678";
-    private final String defaultRole = Role.USER.getValue();
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -34,7 +33,7 @@ class UserTest extends BaseTest {
 
         //then
         assertThat(user).isNotNull();
-        assertThat(user.getRole()).isEqualTo(defaultRole);
+        assertThat(user.getRole()).isEqualTo(Role.USER);
     }
 
     @Test
