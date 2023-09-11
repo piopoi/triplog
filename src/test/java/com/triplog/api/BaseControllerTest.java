@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -32,6 +33,8 @@ public class BaseControllerTest extends BaseTest {
     @Autowired
     protected ObjectMapper objectMapper;
     @Autowired
+    protected PasswordEncoder passwordEncoder;
+    @Autowired
     protected UserRepository userRepository;
 
     protected User admin;
@@ -39,13 +42,13 @@ public class BaseControllerTest extends BaseTest {
 
     @BeforeEach
     void BaseControllerTestSetUp() {
-        adminUserDetailsImpl = createUserAndLogin(adminEmail, adminPassword);
+        adminUserDetailsImpl = createUserAndLogin(adminEmail, adminPassword, Role.ADMIN);
         admin = adminUserDetailsImpl.getUser();
     }
 
-    protected UserDetailsImpl createUserAndLogin(String email, String password) {
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password, Role.ADMIN.name());
-        User user = userRepository.save(User.from(userCreateRequestDTO));
+    protected UserDetailsImpl createUserAndLogin(String email, String password, Role role) {
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password, role.name());
+        User user = userRepository.save(User.of(userCreateRequestDTO, passwordEncoder));
         return UserDetailsImpl.from(user);
     }
 

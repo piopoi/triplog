@@ -37,6 +37,14 @@ include::{snippets}/user/getByEmail/request-fields.adoc[]
 include::{snippets}/user/getByEmail/http-response.adoc[]
 include::{snippets}/user/getByEmail/response-fields.adoc[]
 
+== 사용자 암호 수정
+=== 요청
+include::{snippets}/user/updatePassword/http-request.adoc[]
+include::{snippets}/user/updatePassword/path-parameters.adoc[]
+include::{snippets}/user/updatePassword/request-fields.adoc[]
+=== 응답
+include::{snippets}/user/updatePassword/http-response.adoc[]
+
 == 글 등록
 === 요청
 include::{snippets}/post/create/http-request.adoc[]

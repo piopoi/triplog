@@ -35,8 +35,7 @@ class AuthControllerTest extends BaseControllerTest {
     @BeforeEach
     void setUp() {
         UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password);
-        User user = User.from(userCreateRequestDTO);
-        user.encodePassword(passwordEncoder);
+        User user = User.of(userCreateRequestDTO, passwordEncoder);
         userRepository.save(user);
     }
 

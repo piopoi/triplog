@@ -11,12 +11,17 @@ import com.triplog.api.user.dto.UserCreateRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 class PostTest extends BaseTest {
 
     private final String title = "foo";
     private final String content = "bar";
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     private Post post;
     private PostCreateRequestDTO postCreateRequestDTO;
@@ -25,7 +30,7 @@ class PostTest extends BaseTest {
     @BeforeEach
     void setUp() {
         UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of("test@test.com", "12345678");
-        user = User.from(userCreateRequestDTO);
+        user = User.of(userCreateRequestDTO, passwordEncoder);
         ReflectionTestUtils.setField(user, "id", 1L);
 
         postCreateRequestDTO = PostCreateRequestDTO.of(title, content);

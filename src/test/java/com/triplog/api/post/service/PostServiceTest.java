@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.triplog.api.BaseTest;
+import com.triplog.api.auth.domain.UserDetailsImpl;
 import com.triplog.api.post.domain.Post;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
@@ -170,7 +171,7 @@ class PostServiceTest extends BaseTest {
         Post post = postRepository.save(Post.of(postCreateRequestDTO, user));
 
         //when
-        boolean isAuthor = postService.isPostAuthor(post.getId(), user);
+        boolean isAuthor = postService.hasAuthManagePost(UserDetailsImpl.from(user), post.getId());
 
         //then
         assertThat(isAuthor).isTrue();
@@ -185,7 +186,7 @@ class PostServiceTest extends BaseTest {
         User fakeUser = userRepository.findById(fakeUserId).orElseThrow(IllegalArgumentException::new);
 
         //when
-        boolean isAuthor = postService.isPostAuthor(post.getId(), fakeUser);
+        boolean isAuthor = postService.hasAuthManagePost(UserDetailsImpl.from(fakeUser), post.getId());
 
         //then
         assertThat(isAuthor).isFalse();
@@ -195,7 +196,7 @@ class PostServiceTest extends BaseTest {
     @DisplayName("잘못된 id로 글 작성자 여부를 확인할 수 없다.")
     void isPostAuthor_invalidId() {
         //when then
-        assertThatThrownBy(() -> postService.isPostAuthor(99L, user))
+        assertThatThrownBy(() -> postService.hasAuthManagePost(UserDetailsImpl.from(user), 99L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
