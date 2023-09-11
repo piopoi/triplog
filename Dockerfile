@@ -12,5 +12,3 @@ COPY ${JAR_FILE} app.jar
 #java -jar -Dspring.profiles.active=prod app.jar
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
 
-
-#merge test
