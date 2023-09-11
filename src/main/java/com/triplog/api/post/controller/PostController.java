@@ -55,7 +55,7 @@ public class PostController {
     }
 
     @PatchMapping("/{postId}")
-    @PreAuthorize("@postService.isPostAuthor(#postId, #userDetails.getUser())")
+    @PreAuthorize("@postService.hasAuthManagePost(#userDetails, #postId)")
     public ResponseEntity<Void> updatePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                            @PathVariable Long postId,
                                            @RequestBody PostUpdateRequestDTO postUpdateRequestDTO) {
@@ -64,7 +64,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    @PreAuthorize("@postService.isPostAuthor(#postId, #userDetails.getUser())")
+    @PreAuthorize("@postService.hasAuthManagePost(#userDetails, #postId)")
     public ResponseEntity<Void> deletePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                            @PathVariable Long postId) {
         postService.deletePost(postId);

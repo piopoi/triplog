@@ -1,10 +1,11 @@
 package com.triplog.api.user.service;
 
-import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_NOT_EXISTS;
+import static com.triplog.api.user.constants.UserConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.triplog.api.BaseTest;
 import com.triplog.api.user.domain.User;
+import com.triplog.api.user.dto.PasswordUpdateRequestDTO;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.dto.UserGetRequestDTO;
 import com.triplog.api.user.dto.UserGetResponseDTO;
@@ -13,12 +14,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 class UserServiceTest extends BaseTest {
 
     private final String email = "test@test.com";
     private final String password = "12345678";
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     @Autowired
     private UserService userService;
     @Autowired
@@ -65,5 +69,22 @@ class UserServiceTest extends BaseTest {
         //then
         assertThat(userGetResponseDTO).isNotNull();
         assertThat(userGetResponseDTO.getId()).isEqualTo(user.getId());
+    }
+
+    @Test
+    @DisplayName("사용자 암호를 수정할 수 있다.")
+    void updatePassword() {
+        //given
+        String newPassword = password + "#";
+        PasswordUpdateRequestDTO passwordUpdateRequestDTO = PasswordUpdateRequestDTO.from(newPassword);
+
+        //when
+        userService.updatePassword(user.getId(), passwordUpdateRequestDTO);
+
+        //then
+        User updatedUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_USER_NOT_EXISTS));
+        boolean result = passwordEncoder.matches(newPassword, updatedUser.getPassword());
+        assertThat(result).isTrue();
     }
 }

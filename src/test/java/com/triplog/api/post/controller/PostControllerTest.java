@@ -23,6 +23,7 @@ import com.triplog.api.post.domain.Post;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
 import com.triplog.api.post.repository.PostRepository;
+import com.triplog.api.user.domain.Role;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -261,13 +262,31 @@ public class PostControllerTest extends BaseControllerTest {
     }
 
     @Test
+    @DisplayName("작성자가 아니더라도 관리자는 게시글을 수정할 수 있다.")
+    void updatePost_admin() throws Exception {
+        //given
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
+        UserDetailsImpl fakeUserDetailsImpl = createUserAndLogin("fake@test.com", "12345678", Role.ADMIN);
+
+        //when then
+        mockMvc.perform(patch(requestUri + "/{id}", post.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
+                        .with(user(fakeUserDetailsImpl)))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("권한이 없으면 게시글을 수정할 수 없다.")
     void updatePost_unauth() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
         Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
         PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
-        UserDetailsImpl fakeUserDetailsImpl = createUserAndLogin("fake@test.com", "12345678");
+        UserDetailsImpl fakeUserDetailsImpl = createUserAndLogin("fake@test.com", "12345678", Role.USER);
 
         //when then
         mockMvc.perform(patch(requestUri + "/{id}", post.getId())

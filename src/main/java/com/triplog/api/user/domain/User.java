@@ -10,6 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -51,16 +52,34 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
-    public static User from(UserCreateRequestDTO userCreateRequestDTO) {
-        Role role = StringUtils.isBlank(userCreateRequestDTO.getRole()) ? Role.USER : Role.valueOf(userCreateRequestDTO.getRole());
+    public static User of(UserCreateRequestDTO userCreateRequestDTO, PasswordEncoder passwordEncoder) {
+        String password = initPassword(passwordEncoder, userCreateRequestDTO.getPassword());
+        Role role = initRole(userCreateRequestDTO.getRole());
+
         return User.builder()
                 .email(userCreateRequestDTO.getEmail())
-                .password(userCreateRequestDTO.getPassword())
+                .password(password)
                 .role(role)
                 .build();
     }
 
-    public void encodePassword(PasswordEncoder passwordEncoder) {
-        this.password = passwordEncoder.encode(this.password);
+    public void updatePassword(PasswordEncoder passwordEncoder, String password) {
+        this.password = initPassword(passwordEncoder, password);
+    }
+
+    public boolean isAdmin() {
+        return Objects.equals(this.role, Role.ADMIN);
+    }
+
+    public boolean isSameUser(Long userId) {
+        return Objects.equals(this.id, userId);
+    }
+
+    private static Role initRole(String roleName) {
+        return StringUtils.isBlank(roleName) ? Role.USER : Role.valueOf(roleName);
+    }
+
+    private static String initPassword(PasswordEncoder passwordEncoder, String password) {
+        return passwordEncoder.encode(password);
     }
 }

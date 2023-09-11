@@ -18,35 +18,67 @@ class UserTest extends BaseTest {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    private UserCreateRequestDTO userCreateRequestDTO;
+    private User user;
 
     @BeforeEach
     void setUp() {
-        userCreateRequestDTO = UserCreateRequestDTO.of(email, password);
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password);
+        user = User.of(userCreateRequestDTO, passwordEncoder);
     }
 
     @Test
     @DisplayName("사용자를 생성할 수 있다.")
     void createUser() {
-        //when
-        User user = User.from(userCreateRequestDTO);
-
         //then
         assertThat(user).isNotNull();
         assertThat(user.getRole()).isEqualTo(Role.USER);
     }
 
     @Test
-    @DisplayName("사용자 비밀번호를 암호화 할 수 있다.")
-    void encodePassword() {
+    @DisplayName("사용자 비밀번호를 수정 할 수 있다.")
+    void updatePassword() {
         //given
-        User user = User.from(userCreateRequestDTO);
+        String newPassword = password + "#";
 
         //when
-        user.encodePassword(passwordEncoder);
+        user.updatePassword(passwordEncoder, newPassword);
 
         //then
-        boolean result = passwordEncoder.matches(password, user.getPassword());
+        boolean result = passwordEncoder.matches(newPassword, user.getPassword());
         assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("관리자 여부를 알 수 있다.")
+    void isAdmin() {
+        //given
+        UserCreateRequestDTO adminCreateRequestDTO = UserCreateRequestDTO.of(email, password, Role.ADMIN.name());
+        User admin = User.of(adminCreateRequestDTO, passwordEncoder);
+
+        //when
+        boolean result = admin.isAdmin();
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("같은 사용자인지 알 수 있다.")
+    void isSameUser_true() {
+        //when
+        boolean result = user.isSameUser(user.getId());
+
+        //then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("같은 사용자인지 알 수 있다.")
+    void isSameUser_false() {
+        //when
+        boolean result = user.isSameUser(99L);
+
+        //then
+        assertThat(result).isFalse();
     }
 }

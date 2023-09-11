@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.triplog.api.BaseControllerTest;
 import com.triplog.api.user.domain.Role;
+import com.triplog.api.user.dto.PasswordUpdateRequestDTO;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.dto.UserGetRequestDTO;
 import java.util.Arrays;
@@ -245,5 +246,29 @@ class UserControllerTest extends BaseControllerTest {
                         .with(user(adminUserDetailsImpl)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("사용자 암호를 수정할 수 있다.")
+    void updatePassword() throws Exception {
+        //given
+        PasswordUpdateRequestDTO passwordUpdateRequestDTO = PasswordUpdateRequestDTO.from("123456789");
+
+        //when then
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(requestUri + "/{id}/password", admin.getId())
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordUpdateRequestDTO))
+                        .with(user(adminUserDetailsImpl)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("user/updatePassword",
+                        pathParameters(
+                                parameterWithName("id").description("사용자 아이디")
+                        ),
+                        requestFields(
+                                fieldWithPath("password").description("비밀번호")
+                                        .attributes(key("constraint").value("8자 이상의 문자열"))
+                        ))
+                );
     }
 }

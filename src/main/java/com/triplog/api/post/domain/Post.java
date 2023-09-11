@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -66,6 +67,10 @@ public class Post extends BaseEntity {
     public void update(PostUpdateRequestDTO postUpdateRequestDTO) {
         updateTitle(postUpdateRequestDTO.getTitle());
         updateContent(postUpdateRequestDTO.getContent());
+    }
+
+    public boolean isWriter(User user) {
+        return Objects.equals(this.user, user);
     }
 
     private void updateTitle(String title) {
