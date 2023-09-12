@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.triplog.api.BaseControllerTest;
-import com.triplog.api.auth.domain.UserDetailsImpl;
+import com.triplog.api.auth.domain.UserAdapter;
 import com.triplog.api.post.domain.Post;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
@@ -49,7 +49,7 @@ public class PostControllerTest extends BaseControllerTest {
         mockMvc.perform(RestDocumentationRequestBuilders.post(requestUri)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postCreateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("post/create",
@@ -85,7 +85,7 @@ public class PostControllerTest extends BaseControllerTest {
         mockMvc.perform(post(requestUri)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postCreateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -100,7 +100,7 @@ public class PostControllerTest extends BaseControllerTest {
         mockMvc.perform(post(requestUri)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postCreateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -115,7 +115,7 @@ public class PostControllerTest extends BaseControllerTest {
         mockMvc.perform(post(requestUri)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postCreateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -125,12 +125,12 @@ public class PostControllerTest extends BaseControllerTest {
     void getPost() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.get(requestUri + "/{id}", post.getId())
                         .accept(APPLICATION_JSON)
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post/get",
@@ -152,7 +152,7 @@ public class PostControllerTest extends BaseControllerTest {
         //when then
         mockMvc.perform(get(requestUri + "/{id}", 99L)
                         .accept(APPLICATION_JSON)
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -162,7 +162,7 @@ public class PostControllerTest extends BaseControllerTest {
     void getPost_unauth() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
 
         //when then
         mockMvc.perform(get(requestUri + "/{id}", post.getId())
@@ -178,13 +178,13 @@ public class PostControllerTest extends BaseControllerTest {
         IntStream.range(1, 10)
                 .forEach(i -> {
                     PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title + i, content + i);
-                    postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+                    postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
                 });
 
         //when then
         mockMvc.perform(get(requestUri)
                         .accept(APPLICATION_JSON)
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(5))
@@ -205,14 +205,14 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
         PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.patch(requestUri + "/{id}", post.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post/update",
@@ -232,14 +232,14 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost_onlyTitle() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
         PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", null);
 
         //when then
         mockMvc.perform(patch(requestUri + "/{id}", post.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -249,14 +249,14 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost_onlyContent() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
         PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(null, content + "1");
 
         //when then
         mockMvc.perform(patch(requestUri + "/{id}", post.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -266,15 +266,15 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost_admin() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
         PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
-        UserDetailsImpl fakeUserDetailsImpl = createUserAndLogin("fake@test.com", "12345678", Role.ADMIN);
+        UserAdapter fakeUserAdapter = createUserAndLogin("fake@test.com", "12345678", Role.ADMIN);
 
         //when then
         mockMvc.perform(patch(requestUri + "/{id}", post.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
-                        .with(user(fakeUserDetailsImpl)))
+                        .with(user(fakeUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
@@ -284,15 +284,15 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost_unauth() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
         PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
-        UserDetailsImpl fakeUserDetailsImpl = createUserAndLogin("fake@test.com", "12345678", Role.USER);
+        UserAdapter fakeUserAdapter = createUserAndLogin("fake@test.com", "12345678", Role.USER);
 
         //when then
         mockMvc.perform(patch(requestUri + "/{id}", post.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
-                        .with(user(fakeUserDetailsImpl)))
+                        .with(user(fakeUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -302,11 +302,11 @@ public class PostControllerTest extends BaseControllerTest {
     void deletePost() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.delete(requestUri + "/{id}", post.getId())
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post/delete",
@@ -321,7 +321,7 @@ public class PostControllerTest extends BaseControllerTest {
     void deletePost_notExists() throws Exception {
         //when then
         mockMvc.perform(delete(requestUri + "/{id}", 99L)
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -331,7 +331,7 @@ public class PostControllerTest extends BaseControllerTest {
     void deletePost_unauth() throws Exception {
         //given
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserDetailsImpl.getUser()));
+        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
 
         //when then
         mockMvc.perform(delete(requestUri + "/{id}", post.getId()))

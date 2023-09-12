@@ -2,7 +2,7 @@ package com.triplog.api.post.service;
 
 import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_NOT_EXISTS;
 
-import com.triplog.api.auth.domain.UserDetailsImpl;
+import com.triplog.api.auth.domain.UserAdapter;
 import com.triplog.api.post.domain.Post;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
@@ -51,8 +51,8 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public boolean hasAuthManagePost(UserDetailsImpl userDetails, Long managedPostId) {
-        User loginUser = userDetails.getUser();
+    public boolean hasAuthManagePost(UserAdapter userAdapter, Long managedPostId) {
+        User loginUser = userAdapter.getUser();
         Post post = findPostById(managedPostId);
         return loginUser.isAdmin() || post.isWriter(loginUser);
     }

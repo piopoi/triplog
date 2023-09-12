@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import com.triplog.api.auth.domain.UserDetailsImpl;
+import com.triplog.api.auth.domain.UserAdapter;
 import com.triplog.api.user.domain.Role;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
@@ -38,18 +38,18 @@ public class BaseControllerTest extends BaseTest {
     protected UserRepository userRepository;
 
     protected User admin;
-    protected UserDetailsImpl adminUserDetailsImpl;
+    protected UserAdapter adminUserAdapter;
 
     @BeforeEach
     void BaseControllerTestSetUp() {
-        adminUserDetailsImpl = createUserAndLogin(adminEmail, adminPassword, Role.ADMIN);
-        admin = adminUserDetailsImpl.getUser();
+        adminUserAdapter = createUserAndLogin(adminEmail, adminPassword, Role.ADMIN);
+        admin = adminUserAdapter.getUser();
     }
 
-    protected UserDetailsImpl createUserAndLogin(String email, String password, Role role) {
+    protected UserAdapter createUserAndLogin(String email, String password, Role role) {
         UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password, role.name());
         User user = userRepository.save(User.of(userCreateRequestDTO, passwordEncoder));
-        return UserDetailsImpl.from(user);
+        return UserAdapter.from(user);
     }
 
     protected void checkJsonResponse(MvcResult mvcResult, String expression, String findString) throws UnsupportedEncodingException {

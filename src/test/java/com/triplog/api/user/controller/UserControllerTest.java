@@ -47,7 +47,7 @@ class UserControllerTest extends BaseControllerTest {
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("user/create",
@@ -73,7 +73,7 @@ class UserControllerTest extends BaseControllerTest {
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -89,7 +89,7 @@ class UserControllerTest extends BaseControllerTest {
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -105,7 +105,7 @@ class UserControllerTest extends BaseControllerTest {
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -122,7 +122,7 @@ class UserControllerTest extends BaseControllerTest {
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userCreateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -133,7 +133,7 @@ class UserControllerTest extends BaseControllerTest {
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.get(requestUri + "/{id}", admin.getId())
                         .accept(APPLICATION_JSON)
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(admin.getId()))
@@ -167,7 +167,7 @@ class UserControllerTest extends BaseControllerTest {
         //when then
         mockMvc.perform(get(requestUri + "/{id}", 99L)
                         .accept(APPLICATION_JSON)
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -183,7 +183,7 @@ class UserControllerTest extends BaseControllerTest {
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userGetRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(admin.getId()))
@@ -227,7 +227,7 @@ class UserControllerTest extends BaseControllerTest {
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userGetRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -243,7 +243,7 @@ class UserControllerTest extends BaseControllerTest {
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userGetRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
@@ -258,7 +258,7 @@ class UserControllerTest extends BaseControllerTest {
         mockMvc.perform(RestDocumentationRequestBuilders.patch(requestUri + "/{id}/password", admin.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(passwordUpdateRequestDTO))
-                        .with(user(adminUserDetailsImpl)))
+                        .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("user/updatePassword",
