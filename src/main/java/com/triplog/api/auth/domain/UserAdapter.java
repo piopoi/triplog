@@ -14,17 +14,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 @Getter
 @ToString
-public class UserDetailsImpl implements UserDetails {
+public class UserAdapter implements UserDetails {
 
     private final User user;
 
     @Builder(access = AccessLevel.PRIVATE)
-    private UserDetailsImpl(User user) {
+    private UserAdapter(User user) {
         this.user = user;
     }
 
-    public static UserDetailsImpl from(User user) {
-        return UserDetailsImpl.builder()
+    public static UserAdapter from(User user) {
+        return UserAdapter.builder()
                 .user(user)
                 .build();
     }

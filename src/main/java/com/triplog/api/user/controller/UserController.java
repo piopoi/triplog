@@ -1,6 +1,6 @@
 package com.triplog.api.user.controller;
 
-import com.triplog.api.auth.domain.UserDetailsImpl;
+import com.triplog.api.auth.domain.UserAdapter;
 import com.triplog.api.user.dto.PasswordUpdateRequestDTO;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.dto.UserGetRequestDTO;
@@ -48,8 +48,8 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}/password")
-    @PreAuthorize("@userService.hasAuthManageUser(#userDetails, #userId)")
-    public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
+    @PreAuthorize("@userService.hasAuthManageUser(#userAdapter, #userId)")
+    public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal UserAdapter userAdapter,
                                                @PathVariable Long userId,
                                                @RequestBody @Valid PasswordUpdateRequestDTO passwordUpdateRequestDTO) {
         userService.updatePassword(userId, passwordUpdateRequestDTO);

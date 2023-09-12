@@ -2,7 +2,7 @@ package com.triplog.api.user.service;
 
 import static com.triplog.api.user.constants.UserConstants.MESSAGE_USER_NOT_EXISTS;
 
-import com.triplog.api.auth.domain.UserDetailsImpl;
+import com.triplog.api.auth.domain.UserAdapter;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.dto.PasswordUpdateRequestDTO;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
@@ -48,8 +48,8 @@ public class UserService {
         user.updatePassword(passwordEncoder, passwordUpdateRequestDTO.getPassword());
     }
 
-    public boolean hasAuthManageUser(UserDetailsImpl userDetails, Long managedUserId) {
-        User loginUser = userDetails.getUser();
+    public boolean hasAuthManageUser(UserAdapter userAdapter, Long managedUserId) {
+        User loginUser = userAdapter.getUser();
         return loginUser.isAdmin() || loginUser.isSameUser(managedUserId);
     }
 
