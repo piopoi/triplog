@@ -2,6 +2,7 @@ package com.triplog.api.user.service;
 
 import static com.triplog.api.user.constants.UserConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.triplog.api.BaseTest;
 import com.triplog.api.user.domain.User;
@@ -86,5 +87,23 @@ class UserServiceTest extends BaseTest {
                 .orElseThrow(() -> new IllegalArgumentException(MESSAGE_USER_NOT_EXISTS));
         boolean result = passwordEncoder.matches(newPassword, updatedUser.getPassword());
         assertThat(result).isTrue();
+    }
+
+    @Test
+    @DisplayName("사용자를 삭제할 수 있다.")
+    void deleteUser() {
+        //when
+        userService.deleteUser(user.getId());
+
+        //then
+        assertThat(userRepository.count()).isZero();
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자는 삭제할 수 없다.")
+    void deleteUser_notExists() {
+        //when then
+        assertThatThrownBy(() -> userService.deleteUser(99L))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 }

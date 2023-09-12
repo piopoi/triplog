@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,6 +54,14 @@ public class UserController {
                                                @PathVariable Long userId,
                                                @RequestBody @Valid PasswordUpdateRequestDTO passwordUpdateRequestDTO) {
         userService.updatePassword(userId, passwordUpdateRequestDTO);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("@userService.hasAuthManageUser(#userAdapter, #userId)")
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal UserAdapter userAdapter,
+                                           @PathVariable Long userId) {
+        userService.deleteUser(userId);
         return ResponseEntity.ok().build();
     }
 }
