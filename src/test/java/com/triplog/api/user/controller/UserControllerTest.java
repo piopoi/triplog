@@ -9,6 +9,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -270,5 +271,39 @@ class UserControllerTest extends BaseControllerTest {
                                         .attributes(key("constraint").value("8자 이상의 문자열"))
                         ))
                 );
+    }
+
+    @Test
+    @DisplayName("사용자를 삭제할 수 있다.")
+    void deleteUser() throws Exception {
+        //when then
+        mockMvc.perform(RestDocumentationRequestBuilders.delete(requestUri + "/{id}", admin.getId())
+                        .with(user(adminUserAdapter)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(document("user/delete",
+                        pathParameters(
+                                parameterWithName("id").description("사용자 아이디")
+                        ))
+                );
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자는 삭제할 수 없다.")
+    void deleteUser_notExists() throws Exception {
+        //when then
+        mockMvc.perform(delete(requestUri + "/{id}", 99L)
+                        .with(user(adminUserAdapter)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 사용자는 삭제할 수 없다.")
+    void deleteUser_unauth() throws Exception {
+        //when then
+        mockMvc.perform(delete(requestUri + "/{id}", admin.getId()))
+                .andDo(print())
+                .andExpect(status().isUnauthorized());
     }
 }

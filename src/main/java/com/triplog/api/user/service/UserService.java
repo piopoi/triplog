@@ -48,6 +48,12 @@ public class UserService {
         user.updatePassword(passwordEncoder, passwordUpdateRequestDTO.getPassword());
     }
 
+    @Transactional
+    public void deleteUser(Long userId) {
+        findUserById(userId);
+        userRepository.deleteById(userId);
+    }
+
     public boolean hasAuthManageUser(UserAdapter userAdapter, Long managedUserId) {
         User loginUser = userAdapter.getUser();
         return loginUser.isAdmin() || loginUser.isSameUser(managedUserId);
