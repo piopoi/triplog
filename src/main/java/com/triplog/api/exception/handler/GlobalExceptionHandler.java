@@ -1,12 +1,12 @@
 package com.triplog.api.exception.handler;
 
-import static com.triplog.api.exception.constants.ErrorConstants.MESSAGE_ERROR_UNAUTHORIZED;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.triplog.api.exception.dto.ErrorResponseDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,7 +30,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException e) {
         HttpStatus httpStatus = UNAUTHORIZED;
         log.error("AccessDeniedException", e);
-        final ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.of(httpStatus, MESSAGE_ERROR_UNAUTHORIZED);
+        final ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.of(httpStatus, httpStatus.getReasonPhrase());
+        return ResponseEntity.status(httpStatus).body(errorResponseDTO);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        HttpStatus httpStatus = BAD_REQUEST;
+        log.error("DataIntegrityViolationException", e);
+        final ErrorResponseDTO errorResponseDTO = ErrorResponseDTO.of(httpStatus, httpStatus.getReasonPhrase());
         return ResponseEntity.status(httpStatus).body(errorResponseDTO);
     }
 
