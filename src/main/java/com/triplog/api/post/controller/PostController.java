@@ -38,7 +38,7 @@ public class PostController {
     public ResponseEntity<Void> createPost(@AuthenticationPrincipal UserAdapter userAdapter,
                                            @RequestBody @Valid PostCreateRequestDTO postCreateRequestDTO) {
         Long postId = postService.createPost(postCreateRequestDTO, userAdapter.getUser());
-        return ResponseEntity.created(URI.create("/api/post/" + postId)).build();
+        return ResponseEntity.created(URI.create("/api/posts/" + postId)).build();
     }
 
     @GetMapping("/{postId}")
