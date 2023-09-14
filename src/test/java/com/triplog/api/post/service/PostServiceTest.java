@@ -6,10 +6,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.triplog.api.BaseTest;
 import com.triplog.api.auth.domain.UserAdapter;
+import com.triplog.api.post.domain.Comment;
 import com.triplog.api.post.domain.Post;
+import com.triplog.api.post.dto.CommentCreateRequestDTO;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
+import com.triplog.api.post.repository.CommentRepository;
 import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.service.UserService;
 import com.triplog.api.user.domain.User;
@@ -21,7 +24,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 class PostServiceTest extends BaseTest {
 
@@ -36,7 +41,10 @@ class PostServiceTest extends BaseTest {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
+    private Post post;
     private PostCreateRequestDTO postCreateRequestDTO;
     private User user;
     private Long userId;
@@ -46,14 +54,12 @@ class PostServiceTest extends BaseTest {
         userId = userService.createUser(UserCreateRequestDTO.of("test@test.com", "12345678"));
         user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
         postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
+        post = postRepository.save(Post.of(postCreateRequestDTO, user));
     }
 
     @Test
     @DisplayName("게시글을 생성할 수 있다.")
     void createPost() {
-        //given
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, user));
-
         //then
         Post findPost = findPostById(post.getId());
         assertThat(findPost).isNotNull();
@@ -65,9 +71,6 @@ class PostServiceTest extends BaseTest {
     @Test
     @DisplayName("id로 게시글을 조회할 수 있다.")
     void getPost() {
-        //given
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, user));
-
         //when
         PostGetResponseDTO postGetResponseDTO = postService.getPost(post.getId());
 
@@ -109,7 +112,6 @@ class PostServiceTest extends BaseTest {
     @DisplayName("게시글의 제목과 본문을 수정할 수 있다.")
     void updatePost() {
         //given
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, user));
         PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
 
         //when
@@ -136,7 +138,6 @@ class PostServiceTest extends BaseTest {
     @DisplayName("게시글의 제목만 수정할 수 있다.")
     void updatePost_onlyTitle() {
         //given
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, user));
         PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", null);
 
         //when
@@ -152,7 +153,6 @@ class PostServiceTest extends BaseTest {
     @DisplayName("게시글의 본문만 수정할 수 있다.")
     void updatePost_onlyContent() {
         //given
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, user));
         PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(null, content + "1");
 
         //when
@@ -167,9 +167,6 @@ class PostServiceTest extends BaseTest {
     @Test
     @DisplayName("글 작성자 여부를 확인할 수 있다.")
     void isPostAuthor() {
-        //given
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, user));
-
         //when
         boolean isAuthor = postService.hasAuthManagePost(UserAdapter.from(user), post.getId());
 
@@ -181,7 +178,6 @@ class PostServiceTest extends BaseTest {
     @DisplayName("글 작성자가 아님을 확인할 수 있다.")
     void isPostAuthor_invalid() {
         //given
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, user));
         Long fakeUserId = userService.createUser(UserCreateRequestDTO.of("test2@test.com", "12345678"));
         User fakeUser = userRepository.findById(fakeUserId).orElseThrow(IllegalArgumentException::new);
 
@@ -203,9 +199,6 @@ class PostServiceTest extends BaseTest {
     @Test
     @DisplayName("게시글을 삭제할 수 있다.")
     void deletePost() {
-        //given
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, user));
-
         //when
         postService.deletePost(post.getId());
 
@@ -219,6 +212,46 @@ class PostServiceTest extends BaseTest {
         //when then
         assertThatThrownBy(() -> postService.deletePost(99L))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("댓글을 작성할 수 있다.")
+    @Transactional
+    void createComment() {
+        //given
+        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(content);
+
+        //when
+        Long commentId = postService.createComment(commentCreateRequestDTO, post.getId(), user);
+
+        //then
+        Comment actualComment = commentRepository.findById(commentId).orElseThrow(IllegalArgumentException::new);
+        assertThat(actualComment).isNotNull();
+        assertThat(actualComment.getContent()).isEqualTo(content);
+        assertThat(actualComment.getPost().getId()).isEqualTo(post.getId());
+        assertThat(actualComment.getUser()).isEqualTo(user);
+    }
+
+    @Test
+    @DisplayName("없는 게시글의 댓글을 작성할 수 없다.")
+    void createComment_postNotExists() {
+        //given
+        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(content);
+
+        //when then
+        assertThatThrownBy(() -> postService.createComment(commentCreateRequestDTO, 99L, user))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("max length를 초과하는 댓글을 작성할 수 없다.")
+    void createComment_contentMaxLength() {
+        //given
+        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO("1".repeat(101));
+
+        //when then
+        assertThatThrownBy(() -> postService.createComment(commentCreateRequestDTO, post.getId(), user))
+                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     private Post findPostById(Long postId) {

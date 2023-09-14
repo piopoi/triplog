@@ -3,10 +3,11 @@ package com.triplog.api.post.controller;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import com.triplog.api.auth.domain.UserAdapter;
-import com.triplog.api.post.service.PostService;
+import com.triplog.api.post.dto.CommentCreateRequestDTO;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
+import com.triplog.api.post.service.PostService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -69,5 +70,13 @@ public class PostController {
                                            @PathVariable Long postId) {
         postService.deletePost(postId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<Void> createComment(@AuthenticationPrincipal UserAdapter userAdapter,
+                                              @PathVariable Long postId,
+                                              @RequestBody @Valid CommentCreateRequestDTO commentCreateRequestDTO) {
+        Long commentId = postService.createComment(commentCreateRequestDTO, postId, userAdapter.getUser());
+        return ResponseEntity.created(URI.create("/api/comments/" + commentId)).build();
     }
 }
