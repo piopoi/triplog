@@ -3,10 +3,13 @@ package com.triplog.api.post.service;
 import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_NOT_EXISTS;
 
 import com.triplog.api.auth.domain.UserAdapter;
+import com.triplog.api.post.domain.Comment;
 import com.triplog.api.post.domain.Post;
+import com.triplog.api.post.dto.CommentCreateRequestDTO;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
+import com.triplog.api.post.repository.CommentRepository;
 import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.domain.User;
 import java.util.List;
@@ -22,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     @Transactional
     public Long createPost(PostCreateRequestDTO postCreateRequestDTO, User user) {
@@ -61,6 +65,14 @@ public class PostService {
     public void deletePost(Long postId) {
         findPostById(postId);
         postRepository.deleteById(postId);
+    }
+
+    @Transactional
+    public Long createComment(CommentCreateRequestDTO requestDTO, Long postId, User user) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_POST_NOT_EXISTS));
+        Comment comment = Comment.of(requestDTO, post, user);
+        return commentRepository.save(comment).getId();
     }
 
     private Post findPostById(Long postId) {

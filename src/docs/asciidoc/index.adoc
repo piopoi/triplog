@@ -81,3 +81,11 @@ include::{snippets}/post/delete/http-request.adoc[]
 include::{snippets}/post/delete/path-parameters.adoc[]
 === 응답
 include::{snippets}/post/delete/http-response.adoc[]
+
+== 댓글 등록
+=== 요청
+include::{snippets}/comment/create/http-request.adoc[]
+include::{snippets}/comment/create/path-parameters.adoc[]
+include::{snippets}/comment/create/request-fields.adoc[]
+=== 응답
+include::{snippets}/comment/create/http-response.adoc[]

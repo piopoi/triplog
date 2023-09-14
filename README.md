@@ -40,10 +40,9 @@ cd [프로젝트 경로]
    - app 실행 후 url: [http://localhost:8080/docs/index.html](http://localhost:8080/docs/index.html)
    <br>
 
-## DB Diagram
-
-<img src="docs/db_diagram.png" width="500"/>
-<br>
+[//]: # (## DB Diagram)
+[//]: # (<img src="docs/db_diagram.png" width="500"/>)
+[//]: # (<br>)
 
 ## 사용 기술
 
@@ -66,17 +65,13 @@ cd [프로젝트 경로]
 ## 구현 기능
 
 - 통합/단위 테스트 코드 작성.
-- 사용자 생성
-    - 이메일 조건: @ 포함
-    - 비밀번호 조건: 8자 이상
-    - 비밀번호 암호화
+- 사용자
+  - 생성 / 조회 / 비밀번호 수정 / 삭제
 - 로그인
-    - 사용자 생성의 이메일/비밀번호 조건과 같은 유효성 검사 포함.
-    - JWT 인증 적용
+    - JWT 인증
 - 게시글
-    - 작성 / 리스트 조회 / 단건 조회 / 수정 / 삭제
-    - 리스트 조회 시 Pageable을 이용한 Pagination 처리.
-    - 수정/삭제는 게시글 작성자만 가능하도록 제한.
+  - 생성 / 전체조회 / 단건조회 / 수정 / 삭제
+  - 댓글 생성
 
 ## 잡담
 
