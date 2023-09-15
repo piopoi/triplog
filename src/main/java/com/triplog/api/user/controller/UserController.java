@@ -19,36 +19,34 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping
+    @PostMapping("/api/users")
     public ResponseEntity<Void> createUser(@RequestBody @Valid UserCreateRequestDTO userCreateRequestDTO) {
         Long userId = userService.createUser(userCreateRequestDTO);
         return ResponseEntity.created(URI.create("/api/users/" + userId)).build();
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/api/users/{userId}")
     public ResponseEntity<UserGetResponseDTO> getUserById(@PathVariable Long userId) {
         UserGetResponseDTO userGetResponseDTO = userService.getUserById(userId);
         return ResponseEntity.ok(userGetResponseDTO);
     }
 
-    @GetMapping
+    @GetMapping("/api/users")
     public ResponseEntity<UserGetResponseDTO> getUserByEmail(@RequestBody @Valid UserGetRequestDTO userGetRequestDTO) {
         UserGetResponseDTO userGetResponseDTO = userService.getUserByEmail(userGetRequestDTO);
         return ResponseEntity.ok(userGetResponseDTO);
     }
 
-    @PatchMapping("/{userId}/password")
+    @PatchMapping("/api/users/{userId}/password")
     @PreAuthorize("@userService.hasAuthManageUser(#userAdapter, #userId)")
     public ResponseEntity<Void> updatePassword(@AuthenticationPrincipal UserAdapter userAdapter,
                                                @PathVariable Long userId,
@@ -57,7 +55,7 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/api/users/{userId}")
     @PreAuthorize("@userService.hasAuthManageUser(#userAdapter, #userId)")
     public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal UserAdapter userAdapter,
                                            @PathVariable Long userId) {

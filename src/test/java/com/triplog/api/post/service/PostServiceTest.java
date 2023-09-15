@@ -1,32 +1,27 @@
 package com.triplog.api.post.service;
 
-import static com.triplog.api.post.constants.PostConstants.*;
+import static com.triplog.api.post.constants.PostConstants.MESSAGE_POST_NOT_EXISTS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.triplog.api.BaseTest;
 import com.triplog.api.auth.domain.UserAdapter;
-import com.triplog.api.post.domain.Comment;
 import com.triplog.api.post.domain.Post;
-import com.triplog.api.post.dto.CommentCreateRequestDTO;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
-import com.triplog.api.post.repository.CommentRepository;
 import com.triplog.api.post.repository.PostRepository;
-import com.triplog.api.user.service.UserService;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.repository.UserRepository;
+import com.triplog.api.user.service.UserService;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 class PostServiceTest extends BaseTest {
 
@@ -41,11 +36,8 @@ class PostServiceTest extends BaseTest {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private CommentRepository commentRepository;
 
     private Post post;
-    private PostCreateRequestDTO postCreateRequestDTO;
     private User user;
     private Long userId;
 
@@ -53,7 +45,7 @@ class PostServiceTest extends BaseTest {
     void setUp() {
         userId = userService.createUser(UserCreateRequestDTO.of("test@test.com", "12345678"));
         user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-        postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
         post = postRepository.save(Post.of(postCreateRequestDTO, user));
     }
 
@@ -212,46 +204,6 @@ class PostServiceTest extends BaseTest {
         //when then
         assertThatThrownBy(() -> postService.deletePost(99L))
                 .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("댓글을 작성할 수 있다.")
-    @Transactional
-    void createComment() {
-        //given
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(content);
-
-        //when
-        Long commentId = postService.createComment(commentCreateRequestDTO, post.getId(), user);
-
-        //then
-        Comment actualComment = commentRepository.findById(commentId).orElseThrow(IllegalArgumentException::new);
-        assertThat(actualComment).isNotNull();
-        assertThat(actualComment.getContent()).isEqualTo(content);
-        assertThat(actualComment.getPost().getId()).isEqualTo(post.getId());
-        assertThat(actualComment.getUser()).isEqualTo(user);
-    }
-
-    @Test
-    @DisplayName("없는 게시글의 댓글을 작성할 수 없다.")
-    void createComment_postNotExists() {
-        //given
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(content);
-
-        //when then
-        assertThatThrownBy(() -> postService.createComment(commentCreateRequestDTO, 99L, user))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("max length를 초과하는 댓글을 작성할 수 없다.")
-    void createComment_contentMaxLength() {
-        //given
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO("1".repeat(101));
-
-        //when then
-        assertThatThrownBy(() -> postService.createComment(commentCreateRequestDTO, post.getId(), user))
-                .isInstanceOf(DataIntegrityViolationException.class);
     }
 
     private Post findPostById(Long postId) {

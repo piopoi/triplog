@@ -1,8 +1,8 @@
-package com.triplog.api.post.dto;
+package com.triplog.api.post.comment.dto;
 
-import static com.triplog.api.post.constants.PostConstants.*;
+import static com.triplog.api.post.comment.constants.CommentConstants.*;
 
-import com.triplog.api.post.domain.Comment;
+import com.triplog.api.post.comment.domain.Comment;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;

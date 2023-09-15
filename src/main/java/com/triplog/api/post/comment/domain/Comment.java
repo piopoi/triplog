@@ -1,7 +1,8 @@
-package com.triplog.api.post.domain;
+package com.triplog.api.post.comment.domain;
 
 import com.triplog.api.BaseEntity;
-import com.triplog.api.post.dto.CommentCreateRequestDTO;
+import com.triplog.api.post.domain.Post;
+import com.triplog.api.post.comment.dto.CommentCreateRequestDTO;
 import com.triplog.api.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

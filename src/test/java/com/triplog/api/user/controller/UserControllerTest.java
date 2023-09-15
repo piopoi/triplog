@@ -33,7 +33,6 @@ class UserControllerTest extends BaseControllerTest {
     private final String email = "test@test.com";
     private final String password = "12345678";
 
-
     @Test
     @DisplayName("사용자를 등록할 수 있다.")
     void createUser() throws Exception {
