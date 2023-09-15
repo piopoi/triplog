@@ -3,7 +3,6 @@ package com.triplog.api.post.controller;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 import com.triplog.api.auth.domain.UserAdapter;
-import com.triplog.api.post.dto.CommentCreateRequestDTO;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
@@ -24,38 +23,36 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
+    @PostMapping("/api/posts")
     public ResponseEntity<Void> createPost(@AuthenticationPrincipal UserAdapter userAdapter,
                                            @RequestBody @Valid PostCreateRequestDTO postCreateRequestDTO) {
         Long postId = postService.createPost(postCreateRequestDTO, userAdapter.getUser());
         return ResponseEntity.created(URI.create("/api/posts/" + postId)).build();
     }
 
-    @GetMapping("/{postId}")
+    @GetMapping("/api/posts/{postId}")
     public ResponseEntity<PostGetResponseDTO> getPost(@PathVariable Long postId) {
         PostGetResponseDTO postGetResponseDTO = postService.getPost(postId);
         return ResponseEntity.ok(postGetResponseDTO);
     }
 
-    @GetMapping
+    @GetMapping("/api/posts")
     public ResponseEntity<List<PostGetResponseDTO>> getAllPosts(@PageableDefault(size = 5, direction = DESC, sort = {"id"})
                                                                 Pageable pageable) {
         List<PostGetResponseDTO> postGetResponseDTOs = postService.getAllPosts(pageable);
         return ResponseEntity.ok(postGetResponseDTOs);
     }
 
-    @PatchMapping("/{postId}")
+    @PatchMapping("/api/posts/{postId}")
     @PreAuthorize("@postService.hasAuthManagePost(#userAdapter, #postId)")
     public ResponseEntity<Void> updatePost(@AuthenticationPrincipal UserAdapter userAdapter,
                                            @PathVariable Long postId,
@@ -64,19 +61,11 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/api/posts/{postId}")
     @PreAuthorize("@postService.hasAuthManagePost(#userAdapter, #postId)")
     public ResponseEntity<Void> deletePost(@AuthenticationPrincipal UserAdapter userAdapter,
                                            @PathVariable Long postId) {
         postService.deletePost(postId);
         return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/{postId}/comments")
-    public ResponseEntity<Void> createComment(@AuthenticationPrincipal UserAdapter userAdapter,
-                                              @PathVariable Long postId,
-                                              @RequestBody @Valid CommentCreateRequestDTO commentCreateRequestDTO) {
-        Long commentId = postService.createComment(commentCreateRequestDTO, postId, userAdapter.getUser());
-        return ResponseEntity.created(URI.create("/api/comments/" + commentId)).build();
     }
 }

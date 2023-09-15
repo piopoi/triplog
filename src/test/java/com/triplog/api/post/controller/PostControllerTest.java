@@ -20,32 +20,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.triplog.api.BaseControllerTest;
 import com.triplog.api.auth.domain.UserAdapter;
 import com.triplog.api.post.domain.Post;
-import com.triplog.api.post.dto.CommentCreateRequestDTO;
 import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
-import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.domain.Role;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 
 public class PostControllerTest extends BaseControllerTest {
 
     private final String requestUri = "/api/posts";
-    private final String postTitle = "foo";
-    private final String postContent = "bar";
-    private final String commentContent = "test";
-
-    @Autowired
-    private PostRepository postRepository;
+    private final String title = "foo";
+    private final String content = "bar";
 
     @Test
     @DisplayName("게시글을 작성할 수 있다.")
     void createPost() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.post(requestUri)
@@ -67,7 +60,7 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("권한 없이 게시글을 작성할 수 없다.")
     void createPost_unauth() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -81,7 +74,7 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("제목 없이 게시글을 작성할 수 없다.")
     void createPost_emptyTitle() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of("", postContent);
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of("", content);
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -96,7 +89,7 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("제목이 50자를 초과할 수 없다.")
     void createPost_invalidTitle() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of("a".repeat(51), postContent);
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of("a".repeat(51), content);
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -111,7 +104,7 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("본문 없이 게시글을 작성할 수 없다.")
     void createPost_emptyContent() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, "");
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, "");
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -126,18 +119,17 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("id로 게시글을 조회할 수 있다.")
     void getPost() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
+        Post post = createPost(title, content, admin);
 
         //when then
-        mockMvc.perform(RestDocumentationRequestBuilders.get(requestUri + "/{id}", post.getId())
+        mockMvc.perform(RestDocumentationRequestBuilders.get(requestUri + "/{postId}", post.getId())
                         .accept(APPLICATION_JSON)
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post/get",
                         pathParameters(
-                                parameterWithName("id").description("게시글 아이디")
+                                parameterWithName("postId").description("게시글 아이디")
                         ),
                         responseFields(
                                 fieldWithPath("id").description("게시글 아이디"),
@@ -152,7 +144,7 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("존재하지 않는 게시글은 조회할 수 없다 by id")
     void getPost_invalidId() throws Exception {
         //when then
-        mockMvc.perform(get(requestUri + "/{id}", 99L)
+        mockMvc.perform(get(requestUri + "/{postId}", 99L)
                         .accept(APPLICATION_JSON)
                         .with(user(adminUserAdapter)))
                 .andDo(print())
@@ -163,11 +155,10 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("권한 없이 게시글을 조회할 수 없다.")
     void getPost_unauth() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
+        Post post = createPost(title, content, admin);
 
         //when then
-        mockMvc.perform(get(requestUri + "/{id}", post.getId())
+        mockMvc.perform(get(requestUri + "/{postId}", post.getId())
                         .accept(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
@@ -178,10 +169,7 @@ public class PostControllerTest extends BaseControllerTest {
     void getAllPosts() throws Exception {
         //given
         IntStream.range(1, 10)
-                .forEach(i -> {
-                    PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle + i, postContent + i);
-                    postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
-                });
+                .forEach(i -> createPost(title + i, content + i, admin));
 
         //when then
         mockMvc.perform(get(requestUri)
@@ -190,8 +178,8 @@ public class PostControllerTest extends BaseControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(5))
-                .andExpect(jsonPath("$[0].title").value(postTitle + "9"))
-                .andExpect(jsonPath("$[0].content").value(postContent + "9"))
+                .andExpect(jsonPath("$[0].title").value(title + "9"))
+                .andExpect(jsonPath("$[0].content").value(content + "9"))
                 .andDo(document("post/getAll",
                         responseFields(
                                 fieldWithPath("[].id").description("게시글 아이디"),
@@ -206,12 +194,11 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("게시글의 제목과 본문을 수정할 수 있다.")
     void updatePost() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(postTitle + "1", postContent + "1");
+        Post post = createPost(title, content, admin);
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
 
         //when then
-        mockMvc.perform(RestDocumentationRequestBuilders.patch(requestUri + "/{id}", post.getId())
+        mockMvc.perform(RestDocumentationRequestBuilders.patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(adminUserAdapter)))
@@ -219,7 +206,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .andExpect(status().isOk())
                 .andDo(document("post/update",
                         pathParameters(
-                                parameterWithName("id").description("게시글 아이디")
+                                parameterWithName("postId").description("게시글 아이디")
                         ),
                         requestFields(
                                 fieldWithPath("title").description("제목")
@@ -233,12 +220,11 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("게시글의 제목만 수정할 수 있다.")
     void updatePost_onlyTitle() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(postTitle + "1", null);
+        Post post = createPost(title, content, admin);
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", null);
 
         //when then
-        mockMvc.perform(patch(requestUri + "/{id}", post.getId())
+        mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(adminUserAdapter)))
@@ -250,12 +236,11 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("게시글의 제목만 수정할 수 있다.")
     void updatePost_onlyContent() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(null, postContent + "1");
+        Post post = createPost(title, content, admin);
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(null, content + "1");
 
         //when then
-        mockMvc.perform(patch(requestUri + "/{id}", post.getId())
+        mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(adminUserAdapter)))
@@ -267,13 +252,12 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("작성자가 아니더라도 관리자는 게시글을 수정할 수 있다.")
     void updatePost_admin() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(postTitle + "1", postContent + "1");
-        UserAdapter fakeUserAdapter = createUserAndLogin("fake@test.com", "12345678", Role.ADMIN);
+        Post post = createPost(title, content, admin);
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
+        UserAdapter fakeUserAdapter = createUserAdapter("fake@test.com", "12345678", Role.ADMIN);
 
         //when then
-        mockMvc.perform(patch(requestUri + "/{id}", post.getId())
+        mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(fakeUserAdapter)))
@@ -285,13 +269,12 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("권한이 없으면 게시글을 수정할 수 없다.")
     void updatePost_unauth() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(postTitle + "1", postContent + "1");
-        UserAdapter fakeUserAdapter = createUserAndLogin("fake@test.com", "12345678", Role.USER);
+        Post post = createPost(title, content, admin);
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
+        UserAdapter fakeUserAdapter = createUserAdapter("fake@test.com", "12345678", Role.USER);
 
         //when then
-        mockMvc.perform(patch(requestUri + "/{id}", post.getId())
+        mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(fakeUserAdapter)))
@@ -303,17 +286,16 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("게시글을 삭제할 수 있다.")
     void deletePost() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
+        Post post = createPost(title, content, admin);
 
         //when then
-        mockMvc.perform(RestDocumentationRequestBuilders.delete(requestUri + "/{id}", post.getId())
+        mockMvc.perform(RestDocumentationRequestBuilders.delete(requestUri + "/{postId}", post.getId())
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("post/delete",
                         pathParameters(
-                                parameterWithName("id").description("게시글 아이디")
+                                parameterWithName("postId").description("게시글 아이디")
                         ))
                 );
     }
@@ -322,7 +304,7 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("존재하지 않는 게시글은 삭제할 수 없다 by id")
     void deletePost_notExists() throws Exception {
         //when then
-        mockMvc.perform(delete(requestUri + "/{id}", 99L)
+        mockMvc.perform(delete(requestUri + "/{postId}", 99L)
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -332,90 +314,11 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("권한이 없으면 게시글을 삭제할 수 없다.")
     void deletePost_unauth() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(postTitle, postContent);
-        Post post = postRepository.save(Post.of(postCreateRequestDTO, adminUserAdapter.getUser()));
+        Post post = createPost(title, content, admin);
 
         //when then
-        mockMvc.perform(delete(requestUri + "/{id}", post.getId()))
+        mockMvc.perform(delete(requestUri + "/{postId}", post.getId()))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("댓글을 작성할 수 있다.")
-    void createComment() throws Exception {
-        //given
-        Long postId = createTestPost();
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(commentContent);
-
-        //when then
-        mockMvc.perform(RestDocumentationRequestBuilders.post(requestUri + "/{postId}/comments", postId)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentCreateRequestDTO))
-                        .with(user(adminUserAdapter)))
-                .andDo(print())
-                .andExpect(status().isCreated())
-                .andDo(document("comment/create",
-                        pathParameters(
-                                parameterWithName("postId").description("게시글 아이디")
-                        ),
-                        requestFields(
-                                fieldWithPath("content").description("댓글 내용")
-                                        .attributes(key("constraint").value("max length = 100"))
-                        ))
-                );
-    }
-
-    @Test
-    @DisplayName("권한 없이 댓글을 작성할 수 없다.")
-    void createComment_unauth() throws Exception {
-        //given
-        Long postId = createTestPost();
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(commentContent);
-
-        //when then
-        mockMvc.perform(post(requestUri + "/{postId}/comments", postId)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentCreateRequestDTO)))
-                .andDo(print())
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("없는 게시글의 댓글을 작성할 수 없다.")
-    void createComment_postNotExists() throws Exception {
-        //given
-        Long postId = 99L;
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(commentContent);
-
-        //when then
-        mockMvc.perform(post(requestUri + "/{postId}/comments", postId)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentCreateRequestDTO))
-                        .with(user(adminUserAdapter)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("max length를 초과하는 댓글을 작성할 수 없다.")
-    void createComment_contentMaxLength() throws Exception {
-        //given
-        Long postId = createTestPost();
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO("1".repeat(101));
-
-        //when then
-        mockMvc.perform(post(requestUri + "/{postId}/comments", postId)
-                        .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentCreateRequestDTO))
-                        .with(user(adminUserAdapter)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    private Long createTestPost() {
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of("title", "content");
-        Post post = Post.of(postCreateRequestDTO, admin);
-        return postRepository.save(post).getId();
     }
 }
