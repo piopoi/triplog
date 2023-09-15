@@ -92,6 +92,7 @@ task copyDocument(type: Copy) {
 //REST Docs
 build {
     dependsOn copyDocument
+    delete file('logs')
 }
 
 //REST Docs
