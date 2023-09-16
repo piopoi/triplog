@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.triplog.api.BaseControllerTest;
-import com.triplog.api.post.comment.dto.CommentCreateRequestDTO;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,12 +36,12 @@ public class CommentControllerTest extends BaseControllerTest {
     @DisplayName("댓글을 작성할 수 있다.")
     void createComment() throws Exception {
         //given
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(content);
+        Map<String, String> params = Map.of("content", content);
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.post("/api/posts/{postId}/comments", postId)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentCreateRequestDTO))
+                        .content(objectMapper.writeValueAsString(params))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isCreated())
@@ -60,12 +60,12 @@ public class CommentControllerTest extends BaseControllerTest {
     @DisplayName("권한 없이 댓글을 작성할 수 없다.")
     void createComment_unauth() throws Exception {
         //given
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(content);
+        Map<String, String> params = Map.of("content", content);
 
         //when then
         mockMvc.perform(post(requestUri, postId)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentCreateRequestDTO)))
+                        .content(objectMapper.writeValueAsString(params)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -75,12 +75,12 @@ public class CommentControllerTest extends BaseControllerTest {
     void createComment_postNotExists() throws Exception {
         //given
         Long postId = 99L;
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(content);
+        Map<String, String> params = Map.of("content", content);
 
         //when then
         mockMvc.perform(post(requestUri, postId)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentCreateRequestDTO))
+                        .content(objectMapper.writeValueAsString(params))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -90,12 +90,12 @@ public class CommentControllerTest extends BaseControllerTest {
     @DisplayName("max length를 초과하는 댓글을 작성할 수 없다.")
     void createComment_contentMaxLength() throws Exception {
         //given
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO("1".repeat(101));
+        Map<String, String> params = Map.of("content", "1".repeat(101));
 
         //when then
         mockMvc.perform(post(requestUri, postId)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(commentCreateRequestDTO))
+                        .content(objectMapper.writeValueAsString(params))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
