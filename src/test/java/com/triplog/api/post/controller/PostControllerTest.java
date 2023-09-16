@@ -20,8 +20,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.triplog.api.BaseControllerTest;
 import com.triplog.api.auth.domain.UserAdapter;
 import com.triplog.api.post.domain.Post;
+import com.triplog.api.post.dto.PostCreateRequestDTO;
+import com.triplog.api.post.dto.PostUpdateRequestDTO;
 import com.triplog.api.user.domain.Role;
-import java.util.Map;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -46,7 +46,8 @@ class CommentServiceTest extends BaseTest {
         Long commentId = commentService.createComment(commentCreateRequestDTO, post.getId(), user);
 
         //then
-        Comment actualComment = commentRepository.findById(commentId).orElseThrow(IllegalArgumentException::new);
+        Comment actualComment = commentRepository.findById(commentId)
+                .orElseThrow(IllegalArgumentException::new);
         assertThat(actualComment).isNotNull();
         assertThat(actualComment.getContent()).isEqualTo(content);
         assertThat(actualComment.getPost().getId()).isEqualTo(post.getId());

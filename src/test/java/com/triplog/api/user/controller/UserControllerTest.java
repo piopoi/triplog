@@ -18,9 +18,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.triplog.api.BaseControllerTest;
 import com.triplog.api.user.domain.Role;
+import com.triplog.api.user.dto.UserCreateRequestDTO;
+import com.triplog.api.user.dto.UserGetRequestDTO;
+import com.triplog.api.user.dto.PasswordUpdateRequestDTO;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;

@@ -7,14 +7,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.triplog.api.BaseTest;
 import com.triplog.api.auth.domain.UserAdapter;
 import com.triplog.api.post.domain.Post;
-import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.dto.PostGetResponseDTO;
 import com.triplog.api.post.dto.PostUpdateRequestDTO;
 import com.triplog.api.post.repository.PostRepository;
+import com.triplog.api.user.domain.Role;
 import com.triplog.api.user.domain.User;
-import com.triplog.api.user.dto.UserCreateRequestDTO;
-import com.triplog.api.user.repository.UserRepository;
-import com.triplog.api.user.service.UserService;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,21 +29,14 @@ class PostServiceTest extends BaseTest {
     private PostService postService;
     @Autowired
     private PostRepository postRepository;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserRepository userRepository;
 
     private Post post;
     private User user;
-    private Long userId;
 
     @BeforeEach
     void setUp() {
-        userId = userService.createUser(UserCreateRequestDTO.of("test@test.com", "12345678"));
-        user = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        post = postRepository.save(Post.of(postCreateRequestDTO, user));
+        user = createUser("test@test.com", "12345678", Role.USER);
+        post = createPost(title, content, user);
     }
 
     @Test
@@ -57,7 +47,7 @@ class PostServiceTest extends BaseTest {
         assertThat(findPost).isNotNull();
         assertThat(findPost.getTitle()).isEqualTo(title);
         assertThat(findPost.getContent()).isEqualTo(content);
-        assertThat(findPost.getUser().getId()).isEqualTo(userId);
+        assertThat(findPost.getUser().getId()).isEqualTo(user.getId());
     }
 
     @Test
@@ -88,10 +78,7 @@ class PostServiceTest extends BaseTest {
         //given
         Pageable pageable = Pageable.ofSize(5);
         IntStream.range(1, 10)
-                .forEach(i -> {
-                    PostCreateRequestDTO dto = PostCreateRequestDTO.of(title + i, content + i);
-                    postRepository.save(Post.of(dto, user));
-                });
+                .forEach(i -> createPost(title + i, content + i, user));
 
         //when
         List<PostGetResponseDTO> postGetResponseDTOs = postService.getAllPosts(pageable);
@@ -104,7 +91,10 @@ class PostServiceTest extends BaseTest {
     @DisplayName("게시글의 제목과 본문을 수정할 수 있다.")
     void updatePost() {
         //given
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .content(content + "1")
+                .build();
 
         //when
         postService.updatePost(post.getId(), postUpdateRequestDTO);
@@ -119,7 +109,10 @@ class PostServiceTest extends BaseTest {
     @DisplayName("잘못된 id로 게시글을 수정할 수 없다.")
     void updatePost_invalidId() {
         //given
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .content(content + "1")
+                .build();
 
         //when then
         assertThatThrownBy(() -> postService.updatePost(99L, postUpdateRequestDTO))
@@ -130,7 +123,9 @@ class PostServiceTest extends BaseTest {
     @DisplayName("게시글의 제목만 수정할 수 있다.")
     void updatePost_onlyTitle() {
         //given
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", null);
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .build();
 
         //when
         postService.updatePost(post.getId(), postUpdateRequestDTO);
@@ -145,7 +140,9 @@ class PostServiceTest extends BaseTest {
     @DisplayName("게시글의 본문만 수정할 수 있다.")
     void updatePost_onlyContent() {
         //given
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(null, content + "1");
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .content(content + "1")
+                .build();
 
         //when
         postService.updatePost(post.getId(), postUpdateRequestDTO);
@@ -170,8 +167,7 @@ class PostServiceTest extends BaseTest {
     @DisplayName("글 작성자가 아님을 확인할 수 있다.")
     void isPostAuthor_invalid() {
         //given
-        Long fakeUserId = userService.createUser(UserCreateRequestDTO.of("test2@test.com", "12345678"));
-        User fakeUser = userRepository.findById(fakeUserId).orElseThrow(IllegalArgumentException::new);
+        User fakeUser = createUser("fake@test.com", "123123123", Role.USER);
 
         //when
         boolean isAuthor = postService.hasAuthManagePost(UserAdapter.from(fakeUser), post.getId());

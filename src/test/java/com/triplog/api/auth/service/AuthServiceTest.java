@@ -35,8 +35,15 @@ public class AuthServiceTest {
     @DisplayName("로그인 할 수 있다")
     void login() {
         //given
-        TokenRequestDTO tokenRequestDTO = TokenRequestDTO.of("test@example.com", "password");
-        TokenResponseDTO expectedResponse = TokenResponseDTO.of("Bearer", "TOKEN", "TOKEN");
+        TokenRequestDTO tokenRequestDTO = TokenRequestDTO.builder()
+                .email("test@example.com")
+                .password("password")
+                .build();
+        TokenResponseDTO expectedResponse = TokenResponseDTO.builder()
+                .grantType("Bearer")
+                .accessToken("TOKEN")
+                .refreshToken("TOKEN")
+                .build();
         given(authenticationManagerBuilder.getObject()).willReturn(authenticationManager);
         given(authenticationManager.authenticate(any())).willReturn(authentication);
         given(jwtTokenProvider.generateToken(authentication)).willReturn(expectedResponse);

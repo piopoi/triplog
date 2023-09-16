@@ -3,7 +3,6 @@ package com.triplog.api.user.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.triplog.api.BaseTest;
-import com.triplog.api.user.dto.UserCreateRequestDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,8 +21,7 @@ class UserTest extends BaseTest {
 
     @BeforeEach
     void setUp() {
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password);
-        user = User.of(userCreateRequestDTO, passwordEncoder);
+        user = User.of(email, password, Role.USER.name(), passwordEncoder);
     }
 
     @Test
@@ -52,8 +50,7 @@ class UserTest extends BaseTest {
     @DisplayName("관리자 여부를 알 수 있다.")
     void isAdmin() {
         //given
-        UserCreateRequestDTO adminCreateRequestDTO = UserCreateRequestDTO.of(email, password, Role.ADMIN.name());
-        User admin = User.of(adminCreateRequestDTO, passwordEncoder);
+        User admin = User.of(email, password, Role.ADMIN.name(), passwordEncoder);
 
         //when
         boolean result = admin.isAdmin();

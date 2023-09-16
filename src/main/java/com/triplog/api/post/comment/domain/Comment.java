@@ -2,7 +2,6 @@ package com.triplog.api.post.comment.domain;
 
 import com.triplog.api.BaseEntity;
 import com.triplog.api.post.domain.Post;
-import com.triplog.api.post.comment.dto.CommentCreateRequestDTO;
 import com.triplog.api.user.domain.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -57,9 +56,9 @@ public class Comment extends BaseEntity {
         this.user = user;
     }
 
-    public static Comment of(CommentCreateRequestDTO requestDTO, Post post, User user) {
+    public static Comment of(String content, Post post, User user) {
         return Comment.builder()
-                .content(requestDTO.getContent())
+                .content(content)
                 .post(post)
                 .user(user)
                 .build();

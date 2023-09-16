@@ -1,8 +1,6 @@
 package com.triplog.api.post.domain;
 
 import com.triplog.api.BaseEntity;
-import com.triplog.api.post.dto.PostCreateRequestDTO;
-import com.triplog.api.post.dto.PostUpdateRequestDTO;
 import com.triplog.api.user.domain.User;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Column;
@@ -56,17 +54,24 @@ public class Post extends BaseEntity {
         this.user = user;
     }
 
-    public static Post of(PostCreateRequestDTO postCreateRequestDTO, User user) {
+    public static Post of(String title, String content) {
         return Post.builder()
-                .title(postCreateRequestDTO.getTitle())
-                .content(postCreateRequestDTO.getContent())
+                .title(title)
+                .content(content)
+                .build();
+    }
+
+    public static Post of(String title, String content, User user) {
+        return Post.builder()
+                .title(title)
+                .content(content)
                 .user(user)
                 .build();
     }
 
-    public void update(PostUpdateRequestDTO postUpdateRequestDTO) {
-        updateTitle(postUpdateRequestDTO.getTitle());
-        updateContent(postUpdateRequestDTO.getContent());
+    public void update(Post post) {
+        updateTitle(post.getTitle());
+        updateContent(post.getContent());
     }
 
     public boolean isWriter(User user) {

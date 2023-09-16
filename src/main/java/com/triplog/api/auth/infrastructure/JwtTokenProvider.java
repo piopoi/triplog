@@ -48,7 +48,11 @@ public class JwtTokenProvider {
         String accessToken = generateAccessToken(authentication);
         String refreshToken = generateRefreshToken();
 
-        return TokenResponseDTO.of("Bearer", accessToken, refreshToken);
+        return TokenResponseDTO.builder()
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     public Authentication getAuthentication(String accessToken) {
