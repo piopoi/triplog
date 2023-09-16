@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.triplog.api.BaseTest;
+import com.triplog.api.user.domain.Role;
 import com.triplog.api.user.domain.User;
 import com.triplog.api.user.dto.PasswordUpdateRequestDTO;
-import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.dto.UserGetRequestDTO;
 import com.triplog.api.user.dto.UserGetResponseDTO;
 import com.triplog.api.user.repository.UserRepository;
@@ -33,10 +33,7 @@ class UserServiceTest extends BaseTest {
 
     @BeforeEach
     void setUp() {
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password);
-        Long userId = userService.createUser(userCreateRequestDTO);
-        user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_USER_NOT_EXISTS));
+        user = createUser(email, password, Role.USER);
     }
 
     @Test
@@ -62,7 +59,9 @@ class UserServiceTest extends BaseTest {
     @DisplayName("email로 사용자를 조회할 수 있다.")
     void getUserByEmail() {
         //given
-        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.from(email);
+        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.builder()
+                .email(email)
+                .build();
 
         //when
         UserGetResponseDTO userGetResponseDTO = userService.getUserByEmail(userGetRequestDTO);
@@ -77,7 +76,9 @@ class UserServiceTest extends BaseTest {
     void updatePassword() {
         //given
         String newPassword = password + "#";
-        PasswordUpdateRequestDTO passwordUpdateRequestDTO = PasswordUpdateRequestDTO.from(newPassword);
+        PasswordUpdateRequestDTO passwordUpdateRequestDTO = PasswordUpdateRequestDTO.builder()
+                .password(newPassword)
+                .build();
 
         //when
         userService.updatePassword(user.getId(), passwordUpdateRequestDTO);

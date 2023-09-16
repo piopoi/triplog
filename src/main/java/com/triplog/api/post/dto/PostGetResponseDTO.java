@@ -1,25 +1,17 @@
 package com.triplog.api.post.dto;
 
 import com.triplog.api.post.domain.Post;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
+@Builder
 public class PostGetResponseDTO {
 
     private final Long id;
     private final String title;
     private final String content;
     private final Long userId;
-
-    @Builder(access = AccessLevel.PRIVATE)
-    private PostGetResponseDTO(Long id, String title, String content, Long userId) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.userId = userId;
-    }
 
     public static PostGetResponseDTO from(Post post) {
         return PostGetResponseDTO.builder()

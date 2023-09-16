@@ -1,8 +1,6 @@
 package com.triplog.api.user.domain;
 
 import com.triplog.api.BaseEntity;
-import com.triplog.api.user.dto.UserCreateRequestDTO;
-import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -52,19 +50,18 @@ public class User extends BaseEntity {
         this.role = role;
     }
 
-    public static User of(UserCreateRequestDTO userCreateRequestDTO, PasswordEncoder passwordEncoder) {
-        String password = initPassword(passwordEncoder, userCreateRequestDTO.getPassword());
-        Role role = initRole(userCreateRequestDTO.getRole());
-
+    public static User of(String email, String password, String roleName, PasswordEncoder passwordEncoder) {
+        String encodedPassword = passwordEncoder.encode(password);
+        Role role = Role.valueOf(roleName);
         return User.builder()
-                .email(userCreateRequestDTO.getEmail())
-                .password(password)
+                .email(email)
+                .password(encodedPassword)
                 .role(role)
                 .build();
     }
 
     public void updatePassword(PasswordEncoder passwordEncoder, String password) {
-        this.password = initPassword(passwordEncoder, password);
+        this.password = passwordEncoder.encode(password);
     }
 
     public boolean isAdmin() {
@@ -73,13 +70,5 @@ public class User extends BaseEntity {
 
     public boolean isSameUser(Long userId) {
         return Objects.equals(this.id, userId);
-    }
-
-    private static Role initRole(String roleName) {
-        return StringUtils.isBlank(roleName) ? Role.USER : Role.valueOf(roleName);
-    }
-
-    private static String initPassword(PasswordEncoder passwordEncoder, String password) {
-        return passwordEncoder.encode(password);
     }
 }

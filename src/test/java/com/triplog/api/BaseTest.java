@@ -1,11 +1,9 @@
 package com.triplog.api;
 
 import com.triplog.api.post.domain.Post;
-import com.triplog.api.post.dto.PostCreateRequestDTO;
 import com.triplog.api.post.repository.PostRepository;
 import com.triplog.api.user.domain.Role;
 import com.triplog.api.user.domain.User;
-import com.triplog.api.user.dto.UserCreateRequestDTO;
 import com.triplog.api.user.repository.UserRepository;
 import com.triplog.api.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,14 +31,12 @@ public class BaseTest {
     }
 
     protected User createUser(String email, String password, Role role) {
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password, role.name());
-        User user = User.of(userCreateRequestDTO, passwordEncoder);
+        User user = User.of(email, password, role.name(), passwordEncoder);
         return userRepository.save(user);
     }
 
     protected Post createPost(String title, String content, User user) {
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
-        Post post = Post.of(postCreateRequestDTO, user);
+        Post post = Post.of(title, content, user);
         return postRepository.save(post);
     }
 }

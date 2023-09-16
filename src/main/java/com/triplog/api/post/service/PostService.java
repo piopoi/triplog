@@ -25,7 +25,7 @@ public class PostService {
 
     @Transactional
     public Long createPost(PostCreateRequestDTO postCreateRequestDTO, User user) {
-        Post post = Post.of(postCreateRequestDTO, user);
+        Post post = Post.of(postCreateRequestDTO.getTitle(), postCreateRequestDTO.getContent(), user);
         Post savedPost = postRepository.save(post);
         return savedPost.getId();
     }
@@ -47,7 +47,7 @@ public class PostService {
     @Transactional
     public void updatePost(Long postId, PostUpdateRequestDTO postUpdateRequestDTO) {
         Post post = findPostById(postId);
-        post.update(postUpdateRequestDTO);
+        post.update(postUpdateRequestDTO.toEntity());
     }
 
     @Transactional(readOnly = true)
@@ -63,7 +63,8 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    private Post findPostById(Long postId) {
+    @Transactional(readOnly = true)
+    public Post findPostById(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException(MESSAGE_POST_NOT_EXISTS));
     }

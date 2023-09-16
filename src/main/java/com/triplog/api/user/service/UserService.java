@@ -25,7 +25,12 @@ public class UserService {
 
     @Transactional
     public Long createUser(UserCreateRequestDTO userCreateRequestDTO) {
-        User user = User.of(userCreateRequestDTO, passwordEncoder);
+        User user = User.of(
+                userCreateRequestDTO.getEmail(),
+                userCreateRequestDTO.getPassword(),
+                userCreateRequestDTO.getRole(),
+                passwordEncoder
+        );
         return userRepository.save(user).getId();
     }
 
@@ -59,7 +64,8 @@ public class UserService {
         return loginUser.isAdmin() || loginUser.isSameUser(managedUserId);
     }
 
-    private User findUserById(Long userId) {
+    @Transactional(readOnly = true)
+    public User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(MESSAGE_USER_NOT_EXISTS));
     }

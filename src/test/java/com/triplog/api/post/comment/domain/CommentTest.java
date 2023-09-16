@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.triplog.api.BaseTest;
 import com.triplog.api.post.domain.Post;
-import com.triplog.api.post.comment.dto.CommentCreateRequestDTO;
 import com.triplog.api.user.domain.Role;
 import com.triplog.api.user.domain.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,11 +26,8 @@ class CommentTest extends BaseTest {
     @Test
     @DisplayName("댓글을 생성할 수 있다.")
     void createComment() {
-        //given
-        CommentCreateRequestDTO commentCreateRequestDTO = new CommentCreateRequestDTO(content);
-
         //when
-        Comment comment = Comment.of(commentCreateRequestDTO, post, user);
+        Comment comment = Comment.of(content, post, user);
 
         //then
         assertThat(comment).isNotNull();
