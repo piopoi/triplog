@@ -37,15 +37,15 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("게시글을 작성할 수 있다.")
     void createPost() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "title", title,
-                "content", content
-        );
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
+                .title(title)
+                .content(content)
+                .build();
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.post(requestUri)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isCreated())
@@ -62,15 +62,15 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("권한 없이 게시글을 작성할 수 없다.")
     void createPost_unauth() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "title", title,
-                "content", content
-        );
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
+                .title(title)
+                .content(content)
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params)))
+                        .content(objectMapper.writeValueAsString(postCreateRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -79,15 +79,14 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("제목 없이 게시글을 작성할 수 없다.")
     void createPost_emptyTitle() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "title", "",
-                "content", content
-        );
-
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
+                .content(content)
+                .build();
+      
         //when then
         mockMvc.perform(post(requestUri)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -97,15 +96,15 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("제목이 50자를 초과할 수 없다.")
     void createPost_invalidTitle() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "title", "a".repeat(51),
-                "content", content
-        );
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
+                .title("a".repeat(51))
+                .content(content)
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -115,15 +114,14 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("본문 없이 게시글을 작성할 수 없다.")
     void createPost_emptyContent() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "title", title,
-                "content", ""
-        );
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
+                .title(title)
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(postCreateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -209,15 +207,15 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost() throws Exception {
         //given
         Post post = createPost(title, content, admin);
-        Map<String, String> params = Map.of(
-                "title", title + "1",
-                "content", content + "1"
-        );
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .content(content + "1")
+                .build();
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -238,12 +236,14 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost_onlyTitle() throws Exception {
         //given
         Post post = createPost(title, content, admin);
-        Map<String, String> params = Map.of("title", title + "1");
-
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .build();
+      
         //when then
         mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -254,12 +254,14 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost_onlyContent() throws Exception {
         //given
         Post post = createPost(title, content, admin);
-        Map<String, String> params = Map.of("content", content + "1");
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .content(content + "1")
+                .build();
 
         //when then
         mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -271,15 +273,15 @@ public class PostControllerTest extends BaseControllerTest {
         //given
         Post post = createPost(title, content, admin);
         UserAdapter fakeUserAdapter = createUserAdapter("fake@test.com", "12345678", Role.ADMIN);
-        Map<String, String> params = Map.of(
-                "title", title + "1",
-                "content", content + "1"
-        );
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .content(content + "1")
+                .build();
 
         //when then
         mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(fakeUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -291,15 +293,15 @@ public class PostControllerTest extends BaseControllerTest {
         //given
         Post post = createPost(title, content, admin);
         UserAdapter fakeUserAdapter = createUserAdapter("fake@test.com", "12345678", Role.USER);
-        Map<String, String> params = Map.of(
-                "title", title + "1",
-                "content", content + "1"
-        );
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .content(content + "1")
+                .build();
 
         //when then
         mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(postUpdateRequestDTO))
                         .with(user(fakeUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
