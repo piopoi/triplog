@@ -35,12 +35,12 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("사용자를 등록할 수 있다.")
     void createUser() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "email", email,
-                "password", password,
-                "role", Role.USER.name()
-        );
-
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .email(email)
+                .password(password)
+                .role(Role.USER.name())
+                .build();
+      
         List<String> roles = Arrays.stream(Role.values())
                 .map(Enum::name)
                 .toList();
@@ -49,7 +49,7 @@ class UserControllerTest extends BaseControllerTest {
         mockMvc.perform(RestDocumentationRequestBuilders.post(requestUri)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isCreated())
@@ -69,16 +69,16 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("이메일 없이 사용자를 등록할 수 없다.")
     void createUser_emptyEmail() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "password", password,
-                "role", Role.USER.name()
-        );
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .password(password)
+                .role(Role.USER.name())
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -88,17 +88,17 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("잘못된 이메일로 사용자를 등록할 수 없다.")
     void createUser_invalidEmail() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "email", "aaaaaaa",
-                "password", password,
-                "role", Role.USER.name()
-        );
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .email("aaaaa")
+                .password(password)
+                .role(Role.USER.name())
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -108,16 +108,16 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("비밀번호 없이 사용자를 등록할 수 없다.")
     void createUser_emptyPassword() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "email", email,
-                "role", Role.USER.name()
-        );
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .email(email)
+                .role(Role.USER.name())
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -127,16 +127,16 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("사용자 권한 없이 사용자를 등록할 수 없다.")
     void createUser_emptyRole() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "email", email,
-                "password", password
-        );
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .email(email)
+                .password(password)
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -147,16 +147,17 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("8자 미만의 비밀번호로 사용자를 등록할 수 없다.")
     void createUser_shortPassword() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "email", email,
-                "password", "123"
-        );
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .email(email)
+                .password("123")
+                .role(Role.USER.name())
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -211,13 +212,15 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("email로 사용자를 조회할 수 있다.")
     void getUserByEmail() throws Exception {
         //given
-        Map<String, String> params = Map.of("email", admin.getEmail());
+        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.builder()
+                .email(admin.getEmail())
+                .build();
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.get(requestUri)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(userGetRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -240,13 +243,15 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("권한 없이 email로 사용자를 조회할 수 없다.")
     void getUserByEmail_unauth() throws Exception {
         //given
-        Map<String, String> params = Map.of("email", admin.getEmail());
+        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.builder()
+                .email(admin.getEmail())
+                .build();
 
         //when then
         mockMvc.perform(get(requestUri)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params)))
+                        .content(objectMapper.writeValueAsString(userGetRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
@@ -255,13 +260,15 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("잘못된 email로 사용자를 조회할 수 없다.")
     void getUserByEmail_invalidEmail() throws Exception {
         //given
-        Map<String, String> params = Map.of("email", "foo");
+        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.builder()
+                .email("foo")
+                .build();
 
         //when then
         mockMvc.perform(get(requestUri)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(userGetRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -271,13 +278,15 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("없는 사용자를 조회할 수 없다 by email")
     void getUserByEmail_notExists() throws Exception {
         //given
-        Map<String, String> params = Map.of("email", "foo@test.com");
+        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.builder()
+                .email("foo@test.com")
+                .build();
 
         //when then
         mockMvc.perform(get(requestUri)
                         .accept(APPLICATION_JSON)
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(userGetRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
@@ -287,12 +296,14 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("사용자 암호를 수정할 수 있다.")
     void updatePassword() throws Exception {
         //given
-        Map<String, String> params = Map.of("password", "123456789");
+        PasswordUpdateRequestDTO passwordUpdateRequestDTO = PasswordUpdateRequestDTO.builder()
+                .password("123456789")
+                .build();
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.patch(requestUri + "/{id}/password", admin.getId())
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params))
+                        .content(objectMapper.writeValueAsString(passwordUpdateRequestDTO))
                         .with(user(adminUserAdapter)))
                 .andDo(print())
                 .andExpect(status().isOk())

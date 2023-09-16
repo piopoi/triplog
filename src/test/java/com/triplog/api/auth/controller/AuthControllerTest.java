@@ -12,8 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.triplog.api.BaseControllerTest;
+import com.triplog.api.auth.dto.TokenRequestDTO;
 import com.triplog.api.user.domain.Role;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,15 +32,15 @@ class AuthControllerTest extends BaseControllerTest {
     @DisplayName("로그인(jwt) 할 수 있다.")
     void login() throws Exception {
         //given
-        Map<String, String> params = Map.of(
-                "email", email,
-                "password", password
-        );
+        TokenRequestDTO tokenRequestDTO = TokenRequestDTO.builder()
+                .email(email)
+                .password(password)
+                .build();
 
         //when then
         mockMvc.perform(post("/api/auth/login")
                         .contentType(APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(params)))
+                        .content(objectMapper.writeValueAsString(tokenRequestDTO)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.grantType").value("Bearer"))
