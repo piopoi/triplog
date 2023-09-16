@@ -13,37 +13,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.triplog.api.BaseControllerTest;
 import com.triplog.api.auth.dto.TokenRequestDTO;
-import com.triplog.api.user.domain.User;
-import com.triplog.api.user.dto.UserCreateRequestDTO;
-import com.triplog.api.user.repository.UserRepository;
+import com.triplog.api.user.domain.Role;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 class AuthControllerTest extends BaseControllerTest {
 
     private final String email = "test@test.com";
     private final String password = "12345678";
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @BeforeEach
     void setUp() {
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password);
-        User user = User.of(userCreateRequestDTO, passwordEncoder);
-        userRepository.save(user);
+        createUser(email, password, Role.USER);
     }
 
     @Test
     @DisplayName("로그인(jwt) 할 수 있다.")
     void login() throws Exception {
         //given
-        TokenRequestDTO tokenRequestDTO = TokenRequestDTO.of(email, password);
+        TokenRequestDTO tokenRequestDTO = TokenRequestDTO.builder()
+                .email(email)
+                .password(password)
+                .build();
 
         //when then
         mockMvc.perform(post("/api/auth/login")
