@@ -38,7 +38,10 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("게시글을 작성할 수 있다.")
     void createPost() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
+                .title(title)
+                .content(content)
+                .build();
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.post(requestUri)
@@ -60,7 +63,10 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("권한 없이 게시글을 작성할 수 없다.")
     void createPost_unauth() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, content);
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
+                .title(title)
+                .content(content)
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -74,7 +80,9 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("제목 없이 게시글을 작성할 수 없다.")
     void createPost_emptyTitle() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of("", content);
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
+                .content(content)
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -89,7 +97,10 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("제목이 50자를 초과할 수 없다.")
     void createPost_invalidTitle() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of("a".repeat(51), content);
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
+                .title("a".repeat(51))
+                .content(content)
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -104,7 +115,9 @@ public class PostControllerTest extends BaseControllerTest {
     @DisplayName("본문 없이 게시글을 작성할 수 없다.")
     void createPost_emptyContent() throws Exception {
         //given
-        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.of(title, "");
+        PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
+                .title(title)
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -195,7 +208,10 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost() throws Exception {
         //given
         Post post = createPost(title, content, admin);
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .content(content + "1")
+                .build();
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.patch(requestUri + "/{postId}", post.getId())
@@ -221,7 +237,9 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost_onlyTitle() throws Exception {
         //given
         Post post = createPost(title, content, admin);
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", null);
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .build();
 
         //when then
         mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
@@ -237,7 +255,9 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost_onlyContent() throws Exception {
         //given
         Post post = createPost(title, content, admin);
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(null, content + "1");
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .content(content + "1")
+                .build();
 
         //when then
         mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
@@ -253,8 +273,11 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost_admin() throws Exception {
         //given
         Post post = createPost(title, content, admin);
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
         UserAdapter fakeUserAdapter = createUserAdapter("fake@test.com", "12345678", Role.ADMIN);
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .content(content + "1")
+                .build();
 
         //when then
         mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
@@ -270,8 +293,11 @@ public class PostControllerTest extends BaseControllerTest {
     void updatePost_unauth() throws Exception {
         //given
         Post post = createPost(title, content, admin);
-        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.of(title + "1", content + "1");
         UserAdapter fakeUserAdapter = createUserAdapter("fake@test.com", "12345678", Role.USER);
+        PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
+                .title(title + "1")
+                .content(content + "1")
+                .build();
 
         //when then
         mockMvc.perform(patch(requestUri + "/{postId}", post.getId())

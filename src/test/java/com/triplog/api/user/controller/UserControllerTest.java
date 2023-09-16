@@ -37,7 +37,11 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("사용자를 등록할 수 있다.")
     void createUser() throws Exception {
         //given
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, password);
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .email(email)
+                .password(password)
+                .role(Role.USER.name())
+                .build();
         List<String> roles = Arrays.stream(Role.values())
                 .map(Enum::name)
                 .toList();
@@ -66,7 +70,10 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("이메일 없이 사용자를 등록할 수 없다.")
     void createUser_emptyEmail() throws Exception {
         //given
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of("", password);
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .password(password)
+                .role(Role.USER.name())
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -82,7 +89,11 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("잘못된 이메일로 사용자를 등록할 수 없다.")
     void createUser_invalidEmail() throws Exception {
         //given
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of("test", password);
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .email("aaaaa")
+                .password(password)
+                .role(Role.USER.name())
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -98,7 +109,29 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("비밀번호 없이 사용자를 등록할 수 없다.")
     void createUser_emptyPassword() throws Exception {
         //given
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, "");
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .email(email)
+                .role(Role.USER.name())
+                .build();
+
+        //when then
+        mockMvc.perform(post(requestUri)
+                        .accept(APPLICATION_JSON)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userCreateRequestDTO))
+                        .with(user(adminUserAdapter)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("사용자 권한 없이 사용자를 등록할 수 없다.")
+    void createUser_emptyRole() throws Exception {
+        //given
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .email(email)
+                .password(password)
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -115,7 +148,11 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("8자 미만의 비밀번호로 사용자를 등록할 수 없다.")
     void createUser_shortPassword() throws Exception {
         //given
-        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.of(email, "123");
+        UserCreateRequestDTO userCreateRequestDTO = UserCreateRequestDTO.builder()
+                .email(email)
+                .password("123")
+                .role(Role.USER.name())
+                .build();
 
         //when then
         mockMvc.perform(post(requestUri)
@@ -176,7 +213,9 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("email로 사용자를 조회할 수 있다.")
     void getUserByEmail() throws Exception {
         //given
-        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.from(admin.getEmail());
+        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.builder()
+                .email(admin.getEmail())
+                .build();
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.get(requestUri)
@@ -205,7 +244,9 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("권한 없이 email로 사용자를 조회할 수 없다.")
     void getUserByEmail_unauth() throws Exception {
         //given
-        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.from(admin.getEmail());
+        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.builder()
+                .email(admin.getEmail())
+                .build();
 
         //when then
         mockMvc.perform(get(requestUri)
@@ -220,7 +261,9 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("잘못된 email로 사용자를 조회할 수 없다.")
     void getUserByEmail_invalidEmail() throws Exception {
         //given
-        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.from("foo");
+        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.builder()
+                .email("foo")
+                .build();
 
         //when then
         mockMvc.perform(get(requestUri)
@@ -236,7 +279,9 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("없는 사용자를 조회할 수 없다 by email")
     void getUserByEmail_notExists() throws Exception {
         //given
-        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.from("foo@test.com");
+        UserGetRequestDTO userGetRequestDTO = UserGetRequestDTO.builder()
+                .email("foo@test.com")
+                .build();
 
         //when then
         mockMvc.perform(get(requestUri)
@@ -252,7 +297,9 @@ class UserControllerTest extends BaseControllerTest {
     @DisplayName("사용자 암호를 수정할 수 있다.")
     void updatePassword() throws Exception {
         //given
-        PasswordUpdateRequestDTO passwordUpdateRequestDTO = PasswordUpdateRequestDTO.from("123456789");
+        PasswordUpdateRequestDTO passwordUpdateRequestDTO = PasswordUpdateRequestDTO.builder()
+                .password("123456789")
+                .build();
 
         //when then
         mockMvc.perform(RestDocumentationRequestBuilders.patch(requestUri + "/{id}/password", admin.getId())
