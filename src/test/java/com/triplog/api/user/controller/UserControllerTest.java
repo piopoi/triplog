@@ -18,11 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.triplog.api.BaseControllerTest;
 import com.triplog.api.user.domain.Role;
-import com.triplog.api.user.dto.PasswordUpdateRequestDTO;
-import com.triplog.api.user.dto.UserCreateRequestDTO;
-import com.triplog.api.user.dto.UserGetRequestDTO;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -42,6 +40,7 @@ class UserControllerTest extends BaseControllerTest {
                 .password(password)
                 .role(Role.USER.name())
                 .build();
+      
         List<String> roles = Arrays.stream(Role.values())
                 .map(Enum::name)
                 .toList();
