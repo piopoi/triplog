@@ -20,9 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.triplog.api.BaseControllerTest;
 import com.triplog.api.auth.domain.UserAdapter;
 import com.triplog.api.post.domain.Post;
-import com.triplog.api.post.dto.PostCreateRequestDTO;
-import com.triplog.api.post.dto.PostUpdateRequestDTO;
 import com.triplog.api.user.domain.Role;
+import java.util.Map;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -83,7 +82,7 @@ public class PostControllerTest extends BaseControllerTest {
         PostCreateRequestDTO postCreateRequestDTO = PostCreateRequestDTO.builder()
                 .content(content)
                 .build();
-
+      
         //when then
         mockMvc.perform(post(requestUri)
                         .contentType(APPLICATION_JSON)
@@ -240,7 +239,7 @@ public class PostControllerTest extends BaseControllerTest {
         PostUpdateRequestDTO postUpdateRequestDTO = PostUpdateRequestDTO.builder()
                 .title(title + "1")
                 .build();
-
+      
         //when then
         mockMvc.perform(patch(requestUri + "/{postId}", post.getId())
                         .contentType(APPLICATION_JSON)
