@@ -185,7 +185,7 @@ public class PostControllerTest extends BaseControllerTest {
                 .forEach(i -> createPost(title + i, content + i, admin));
 
         //when then
-        mockMvc.perform(get(requestUri)
+        mockMvc.perform(RestDocumentationRequestBuilders.get(requestUri)
                         .accept(APPLICATION_JSON)
                         .with(user(adminUserAdapter)))
                 .andDo(print())
