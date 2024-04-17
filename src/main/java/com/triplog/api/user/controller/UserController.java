@@ -40,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok(userGetResponseDTO);
     }
 
-    @GetMapping("/api/users/emails/{email}")
+    @GetMapping("/api/users")
     public ResponseEntity<UserGetResponseDTO> getUserByEmail(@RequestBody @Valid UserGetRequestDTO userGetRequestDTO) {
         UserGetResponseDTO userGetResponseDTO = userService.getUserByEmail(userGetRequestDTO);
         return ResponseEntity.ok(userGetResponseDTO);
